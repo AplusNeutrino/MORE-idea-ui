@@ -25,7 +25,7 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-idea.user.js
 - **代码行内图片**：默认收起，悬停预览，点击固定
 - **侧栏**：Project View 风格（路径栏、黄文件夹、箭头与选中色）
 - **工具窗条**：左右两侧 IDE 风格条带（Project / Commit / Maven / Python 等装饰按钮，窄屏自动隐藏）
-- **闪屏 / favicon / 菜单**：偏 IDE 壳层；通知区接近 Event Log
+- **加载页面 / favicon / 菜单**：偏 IDE 壳层；通知区接近 Event Log
 - **颜色模式**：跟随 linux.do 浅色 / 深色 / 自动；深色对齐 Darcula
 - **SPA**：站内跳转与前进后退后自动重新套用样式
 
@@ -33,11 +33,11 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-idea.user.js
 
 | | |
 | --- | --- |
-| 闪屏 | ![Splash](./snapshot/splash.png) |
-| 主页 Git Log | ![Home](./snapshot/home-git-log.png) |
-| 话题 · IDEA | ![Topic IDEA](./snapshot/topic-idea.png) |
-| 话题 · PyCharm | ![Topic PyCharm](./snapshot/topic-pycharm.png) |
-| Hover 链接显示图片 | ![Image hover](./snapshot/image-hover.png) |
+| 加载页面 | ![Splash](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/splash.png) |
+| 主页 Git Log | ![Home](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/home-git-log.png) |
+| 话题 · IDEA | ![Topic IDEA](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/topic-idea.png) |
+| 话题 · PyCharm | ![Topic PyCharm](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/topic-pycharm.png) |
+| Hover 链接显示图片 | ![Image hover](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/image-hover.png) |
 
 ## License
 
