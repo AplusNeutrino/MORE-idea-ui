@@ -24,6 +24,7 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-idea.user.js
 - **回帖**：混合语句模板；过短的回帖会补少量样板行
 - **代码行内图片**：默认收起，悬停预览，点击固定
 - **侧栏**：Project View 风格（路径栏、黄文件夹、箭头与选中色）
+- **工具窗条**：左右两侧 IDE 风格条带（Project / Commit / Maven / Python 等装饰按钮，窄屏自动隐藏）
 - **闪屏 / favicon / 菜单**：偏 IDE 壳层；通知区接近 Event Log
 - **颜色模式**：跟随 linux.do 浅色 / 深色 / 自动；深色对齐 Darcula
 - **SPA**：站内跳转与前进后退后自动重新套用样式

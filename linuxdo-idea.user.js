@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Linux DO · JetBrains / Darcula 外观
 // @namespace    https://linux.do/
-// @version      0.1.0
+// @version      0.1.1
 // @description  将 Linux DO 的主页与话题页换成 JetBrains IDE / Darcula 风格（支持 IDEA / PyCharm 切换）。仅改变外观，保留站点原有内容与交互。
 // @author       czm15053
 // @match        https://linux.do/*
@@ -89,6 +89,16 @@
         "Window",
         "Help"
       ],
+      stripLeft: [
+        { label: "Project", icon: "folder", active: true },
+        { label: "Commit", icon: "commit" },
+        { label: "Bookmarks", icon: "bookmark" }
+      ],
+      stripRight: [
+        { label: "Maven", icon: "maven" },
+        { label: "Database", icon: "database" },
+        { label: "AI", icon: "ai" }
+      ],
       mark: IDEA_MARK_SVG
     },
     pycharm: {
@@ -109,6 +119,16 @@
         "VCS",
         "Window",
         "Help"
+      ],
+      stripLeft: [
+        { label: "Project", icon: "folder", active: true },
+        { label: "Structure", icon: "structure" },
+        { label: "Bookmarks", icon: "bookmark" }
+      ],
+      stripRight: [
+        { label: "Python", icon: "python" },
+        { label: "Database", icon: "database" },
+        { label: "AI", icon: "ai" }
       ],
       mark: PYCHARM_MARK_SVG
     }
@@ -233,6 +253,7 @@
       --idea-shadow-2: rgb(0 0 0 / 14%);
       --idea-shadow-3: rgb(0 0 0 / 22%);
       --idea-sidebar: 280px;
+      --idea-tool-strip: 40px;
       --idea-menu: #F2F2F2;
       --idea-status: #F2F2F2;
       --primary: #000000 !important;
@@ -738,8 +759,13 @@
       color: var(--idea-text) !important;
     }
 
-    /* Sidebar: Project View */
+    /* Tool window strips (left / right) */
     .idea-ide-theme {
+      --idea-strip-bg: #F2F2F2;
+      --idea-strip-hover: #E5F3FF;
+      --idea-strip-active: #A6D2FF;
+      --idea-strip-text: #444444;
+      --idea-strip-border: #C9C9C9;
       --idea-pv-bg: #F2F2F2;
       --idea-pv-path: #E8E8E8;
       --idea-pv-text: #000000;
@@ -752,6 +778,11 @@
     }
 
     .idea-ide-theme.idea-dark {
+      --idea-strip-bg: #2B2D30;
+      --idea-strip-hover: #393B40;
+      --idea-strip-active: #2D4A6F;
+      --idea-strip-text: #BBBBBB;
+      --idea-strip-border: #1E1F22;
       --idea-pv-bg: #2B2D30;
       --idea-pv-path: #3C3F41;
       --idea-pv-text: #BCBEC4;
@@ -762,6 +793,123 @@
       --idea-pv-folder: #E8B86D;
       --idea-pv-dot: #4A9EFF;
     }
+
+    .idea-ide-theme .idea-tool-strip {
+      position: fixed;
+      top: 36px;
+      bottom: 22px;
+      z-index: 950;
+      width: var(--idea-tool-strip);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1px;
+      padding: 4px 0;
+      background: var(--idea-strip-bg);
+      border-color: var(--idea-strip-border);
+      color: var(--idea-strip-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .idea-ide-theme .idea-tool-strip-left {
+      left: 0;
+      border-right: 1px solid var(--idea-strip-border);
+    }
+
+    .idea-ide-theme .idea-tool-strip-right {
+      right: 0;
+      border-left: 1px solid var(--idea-strip-border);
+    }
+
+    .idea-ide-theme .idea-tool-strip-spacer {
+      flex: 1 1 auto;
+      min-height: 8px;
+      pointer-events: none;
+    }
+
+    .idea-ide-theme .idea-tool-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      width: 100%;
+      min-height: 42px;
+      margin: 0;
+      padding: 4px 2px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      cursor: default;
+      appearance: none;
+    }
+
+    .idea-ide-theme .idea-tool-btn:hover {
+      background: var(--idea-strip-hover);
+    }
+
+    .idea-ide-theme .idea-tool-btn.is-active {
+      background: var(--idea-strip-active);
+      color: var(--idea-pv-text);
+    }
+
+    .idea-ide-theme .idea-tool-btn-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--idea-accent);
+      flex: 0 0 auto;
+    }
+
+    .idea-ide-theme .idea-tool-btn-icon svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      fill: currentColor;
+    }
+
+    .idea-ide-theme .idea-tool-btn-label {
+      display: block;
+      max-width: 100%;
+      padding: 0 1px;
+      font-size: 9px;
+      line-height: 1.15;
+      text-align: center;
+      word-break: break-all;
+      overflow: hidden;
+      max-height: 2.4em;
+    }
+
+    /* Flush sidebar to the left strip */
+    .idea-ide-theme #main-outlet-wrapper {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      padding-left: var(--idea-tool-strip) !important;
+      padding-right: var(--idea-tool-strip) !important;
+      max-width: none !important;
+      box-sizing: border-box !important;
+    }
+
+    .idea-ide-theme .sidebar-wrapper {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      left: var(--idea-tool-strip) !important;
+    }
+
+    .idea-ide-theme.has-sidebar-page #main-outlet-wrapper,
+    .idea-ide-theme body.has-sidebar-page #main-outlet-wrapper {
+      justify-content: flex-start !important;
+    }
+
+    /* Sidebar: Project View */
 
     .idea-ide-theme .sidebar__panel-switch-button,
     .idea-ide-theme .sidebar-footer-actions .sidebar__panel-switch-button,
@@ -1775,7 +1923,7 @@
       position: fixed !important;
       z-index: 1080 !important;
       top: auto !important;
-      right: 24px !important;
+      right: calc(var(--idea-tool-strip) + 8px) !important;
       bottom: 78px !important;
       left: auto !important;
       display: block !important;
@@ -1830,11 +1978,11 @@
     }
 
     .idea-ide-topic .idea-topic-tools-toggle {
-      right: 24px;
+      right: calc(var(--idea-tool-strip) + 8px);
     }
 
     .idea-ide-topic .idea-back-toggle {
-      right: 68px;
+      right: calc(var(--idea-tool-strip) + 52px);
     }
 
     .idea-ide-topic .idea-post-style-toggle {
@@ -1842,7 +1990,7 @@
     }
 
     body.idea-ide-topic:not(.has-sidebar-page) .idea-post-style-toggle {
-      left: 24px;
+      left: calc(var(--idea-tool-strip) + 8px);
     }
 
     /* Status bar */
@@ -1862,6 +2010,38 @@
       line-height: 22px;
       font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
       pointer-events: none;
+    }
+
+    /* Narrow viewports: drop the tool strips and reclaim the gutters. */
+    @media (max-width: 960px) {
+      .idea-ide-theme .idea-tool-strip {
+        display: none !important;
+      }
+
+      .idea-ide-theme #main-outlet-wrapper {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      .idea-ide-theme .sidebar-wrapper {
+        left: 0 !important;
+      }
+
+      .idea-ide-topic.idea-topic-tools-open .topic-navigation {
+        right: 24px !important;
+      }
+
+      .idea-ide-topic .idea-topic-tools-toggle {
+        right: 24px;
+      }
+
+      .idea-ide-topic .idea-back-toggle {
+        right: 68px;
+      }
+
+      body.idea-ide-topic:not(.has-sidebar-page) .idea-post-style-toggle {
+        left: 24px;
+      }
     }
   `;
 
@@ -1907,6 +2087,9 @@
     if (brand) delete brand.dataset.product;
     const menubar = document.querySelector(".idea-menubar");
     if (menubar) delete menubar.dataset.product;
+    for (const strip of document.querySelectorAll(".idea-tool-strip")) {
+      delete strip.dataset.product;
+    }
     document.querySelector(".idea-editor-tabs")?.removeAttribute("data-route-key");
     document.querySelector(".idea-topic-context")?.removeAttribute("data-route-key");
     for (const el of document.querySelectorAll(".idea-code-lines[data-signature]")) {
@@ -1978,6 +2161,69 @@
       button.tabIndex = -1;
       bar.appendChild(button);
     }
+  }
+
+  // Decorative tool-window strip icons (single-color, 16px viewBox).
+  const STRIP_ICONS = {
+    folder: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="${FOLDER_PATH}"/></svg>`,
+    commit: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v3.5M8 11v3.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`,
+    bookmark: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.5h7v11l-3.5-2.8-3.5 2.8z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>`,
+    structure: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 2.5h12v1.6H2zM4.5 6.5h9.5v1.6H4.5zM7 10.5h7v1.6H7z"/></svg>`,
+    maven: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><text x="8" y="11.5" text-anchor="middle" font-size="9.5" font-weight="700" font-family="JetBrains Mono, Menlo, Consolas, monospace" fill="currentColor">M</text></svg>`,
+    python: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><text x="8" y="11.5" text-anchor="middle" font-size="8" font-weight="700" font-family="JetBrains Mono, Menlo, Consolas, monospace" fill="currentColor">Py</text></svg>`,
+    database: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><ellipse cx="8" cy="4" rx="5" ry="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3 4v8c0 1.1 2.24 2 5 2s5-.9 5-2V4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3 8c0 1.1 2.24 2 5 2s5-.9 5-2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>`,
+    ai: () =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.5l1.5 4.5L14 7.5l-4.5 1.5L8 13.5 6.5 9 2 7.5 6.5 6z"/></svg>`
+  };
+
+  function buildToolStripButton(spec) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `idea-tool-btn${spec.active ? " is-active" : ""}`;
+    button.tabIndex = -1;
+    button.title = spec.label;
+
+    const icon = document.createElement("span");
+    icon.className = "idea-tool-btn-icon";
+    icon.innerHTML = STRIP_ICONS[spec.icon]?.() || "";
+
+    const label = document.createElement("span");
+    label.className = "idea-tool-btn-label";
+    label.textContent = spec.label;
+
+    button.append(icon, label);
+    return button;
+  }
+
+  function ensureToolStrip(side, buttons) {
+    let strip = document.body.querySelector(`:scope > .idea-tool-strip-${side}`);
+    if (!strip) {
+      strip = document.createElement("div");
+      strip.className = `idea-tool-strip idea-tool-strip-${side}`;
+      strip.setAttribute("aria-hidden", "true");
+      document.body.appendChild(strip);
+    }
+
+    const key = `${getProductId()}|${side}`;
+    if (strip.dataset.product === key) return;
+    strip.dataset.product = key;
+    strip.replaceChildren();
+
+    for (const spec of buttons || []) strip.appendChild(buildToolStripButton(spec));
+  }
+
+  function makeToolStrips() {
+    if (!document.body) return;
+    const product = getProduct();
+    ensureToolStrip("left", product.stripLeft);
+    ensureToolStrip("right", product.stripRight);
   }
 
   function makeFavicon() {
@@ -3280,6 +3526,7 @@
 
     makeBrand();
     makeMenuBar();
+    makeToolStrips();
     makeFavicon();
     syncSidebarIcons();
 
