@@ -537,6 +537,10 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 2px 4px 12px;
     }
+    .feishu-rail-avatar-wrap {
+      position: relative; flex-shrink: 0;
+      width: 40px; height: 40px;
+    }
     .feishu-rail-avatar {
       width: 40px; height: 40px; border-radius: 50%;
       overflow: hidden; cursor: pointer; border: none; padding: 0;
@@ -547,6 +551,15 @@
     .feishu-rail-avatar img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
     .feishu-rail-avatar.is-notif-pinned {
       box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--fs-accent);
+    }
+    .feishu-rail-avatar-badge {
+      position: absolute; top: -4px; right: -6px;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      background: var(--fs-danger); color: #fff;
+      font-size: 11px; line-height: 18px; text-align: center;
+      border-radius: 9px; font-weight: 600;
+      box-shadow: 0 0 0 2px var(--fs-rail-bg);
+      pointer-events: none; z-index: 2;
     }
     .feishu-rail-toggle {
       width: 28px; height: 28px; border-radius: 50%;
@@ -1282,12 +1295,15 @@
     rail.className = "feishu-rail";
     rail.setAttribute("aria-label", "飞书风导航");
 
-    // 顶行：头像（hover 弹出原生通知）+ 圆圈展开钮
+    // 顶行：头像（hover 弹出原生通知，角标显示未读）+ 圆圈展开钮
     const head = document.createElement("div");
     head.className = "feishu-rail-head";
-    const avatarEl = document.createElement("div");
-    avatarEl.className = "feishu-rail-avatar";
-    head.appendChild(avatarEl);
+    const avatarWrap = document.createElement("div");
+    avatarWrap.className = "feishu-rail-avatar-wrap";
+    avatarWrap.innerHTML =
+      `<div class="feishu-rail-avatar"></div>` +
+      `<span class="feishu-rail-avatar-badge" style="display:none"></span>`;
+    head.appendChild(avatarWrap);
     const toggle = document.createElement("button");
     toggle.className = "feishu-rail-toggle";
     toggle.title = "展开 / 收起大类";
@@ -1324,11 +1340,80 @@
     return rail;
   }
 
+  function ensureRailAvatarWrap(rail) {
+    if (!rail) return null;
+    const head = rail.querySelector(".feishu-rail-head");
+    if (!head) return null;
+    let wrap = head.querySelector(".feishu-rail-avatar-wrap");
+    let avatar = head.querySelector(".feishu-rail-avatar");
+    if (!wrap && avatar) {
+      wrap = document.createElement("div");
+      wrap.className = "feishu-rail-avatar-wrap";
+      avatar.replaceWith(wrap);
+      wrap.appendChild(avatar);
+    }
+    if (wrap && !wrap.querySelector(".feishu-rail-avatar-badge")) {
+      wrap.insertAdjacentHTML(
+        "beforeend",
+        `<span class="feishu-rail-avatar-badge" style="display:none"></span>`
+      );
+    }
+    return wrap?.querySelector(".feishu-rail-avatar") || avatar;
+  }
+
+  /** 读取 Discourse 未读通知数（与顶栏用户菜单角标同源） */
+  function getUnreadNotificationCount() {
+    try {
+      const owner = getEmberOwner();
+      const user =
+        safeLookup(owner, "service:current-user") ||
+        window.Discourse?.User?.current?.() ||
+        null;
+      if (user) {
+        const pick = (key) => {
+          try {
+            const v = user.get?.(key);
+            if (v != null && v !== "") return Number(v);
+          } catch { /* ignore */ }
+          const direct = user[key];
+          return direct == null || direct === "" ? null : Number(direct);
+        };
+        const all = pick("all_unread_notifications_count");
+        if (all != null && !Number.isNaN(all)) return Math.max(0, all);
+        const unread = pick("unread_notifications");
+        const high = pick("unread_high_priority_notifications");
+        const pm = pick("new_personal_messages_notifications_count");
+        const sum = (unread || 0) + (high || 0) + (pm || 0);
+        if (sum > 0) return sum;
+        if (unread != null && !Number.isNaN(unread)) return Math.max(0, unread);
+      }
+    } catch { /* ignore */ }
+
+    const domBadge = document.querySelector(
+      "#current-user .badge-notification, " +
+      ".header-dropdown-toggle.current-user .badge-notification, " +
+      "#toggle-current-user .badge-notification, " +
+      ".current-user .badge-notification"
+    );
+    if (domBadge) {
+      const text = (domBadge.textContent || "").replace(/\s+/g, "").trim();
+      if (/^\d+$/.test(text)) return Number(text);
+      if (/\d/.test(text)) {
+        const n = parseInt(text, 10);
+        if (!Number.isNaN(n)) return Math.min(n, 99);
+      }
+      // 只有红点/图标、无数字时视为至少 1
+      if (domBadge.classList.contains("unread") || domBadge.querySelector("svg")) return 1;
+    }
+    return 0;
+  }
+
   function syncRail() {
     const rail = document.querySelector(".feishu-rail");
     if (!rail) return;
+    const avatarEl = ensureRailAvatarWrap(rail);
+    if (!avatarEl) return;
     // 头像：取原生当前用户头像
-    const avatarEl = rail.querySelector(".feishu-rail-avatar");
     const img = document.querySelector("#current-user img");
     const name = getCurrentUsername();
     if (img && img.src) {
@@ -1342,7 +1427,16 @@
       avatarEl.textContent = avatarLetter(name);
       avatarEl.style.background = avatarColor(name);
     }
-    // 未读 badge（中栏数据求和）
+
+    // 头像通知角标
+    const notifCount = getUnreadNotificationCount();
+    const avatarBadge = rail.querySelector(".feishu-rail-avatar-badge");
+    if (avatarBadge) {
+      avatarBadge.style.display = notifCount > 0 ? "" : "none";
+      avatarBadge.textContent = notifCount > 99 ? "99+" : String(notifCount);
+    }
+
+    // 「消息」项未读（中栏话题求和）
     const unread = listState.topics.reduce((sum, t) => sum + (t.unread || 0) + (t.new_posts || 0), 0);
     const badge = rail.querySelector('[data-rail-key="chat"] .feishu-rail-badge');
     if (badge) {
@@ -1565,6 +1659,8 @@
     document.querySelectorAll(".user-menu.feishu-user-menu-float, .feishu-user-menu-float").forEach(hideNotifMenuNode);
     hideNotifMenuNode(findUserMenu());
     try { setUserMenuVisible(false); } catch { /* ignore */ }
+    // 看过通知后刷新角标
+    setTimeout(() => syncRail(), 400);
   }
 
   function clearNotifLeaveTimer() {
@@ -3004,6 +3100,15 @@
     document.addEventListener("DOMContentLoaded", scheduleApply, { once: true });
     document.addEventListener("turbo:load", scheduleApply);
     document.addEventListener("page:changed", scheduleApply);
+
+    // 定时同步头像通知角标（currentUser 未读数会变）
+    if (!window.__feishuNotifBadgeTimer) {
+      window.__feishuNotifBadgeTimer = setInterval(() => {
+        if (getViewMode() === "native" || ideaThemeActive()) return;
+        if (!document.querySelector(".feishu-rail")) return;
+        syncRail();
+      }, 15000);
+    }
 
     // ⌘/Ctrl+K → 最左栏搜索（再同步原生 welcome-banner）
     window.addEventListener("keydown", (e) => {
