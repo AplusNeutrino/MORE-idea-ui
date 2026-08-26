@@ -1725,11 +1725,11 @@
   /* ============================== 中栏：会话列表 ============================== */
 
   const listState = {
-    routeKey: "",
     apiPath: "",
     moreUrl: null,
     loading: false,
-    topics: []
+    topics: [],
+    usersById: {}
   };
 
   const LIST_NAV_KEY = "linuxdo-feishu-list-nav"; // "1" = 展开中栏筛选
@@ -1869,6 +1869,67 @@
     }
   }
 
+  /** 站内软跳转：避免中栏自定义链接触发浏览器整页重载 */
+  function discourseRouteTo(url) {
+    if (!url) return false;
+    try {
+      const mod = discourseRequire("discourse/lib/url");
+      const DiscourseURL = mod?.default || mod;
+      if (DiscourseURL && typeof DiscourseURL.routeTo === "function") {
+        DiscourseURL.routeTo(url);
+        return true;
+      }
+    } catch { /* ignore */ }
+    try {
+      if (typeof window.Discourse?.URL?.routeTo === "function") {
+        window.Discourse.URL.routeTo(url);
+        return true;
+      }
+    } catch { /* ignore */ }
+    return false;
+  }
+
+  function navigateInApp(url) {
+    if (!url) return;
+    // 绝对地址收成站内路径
+    let path = url;
+    try {
+      if (/^https?:/i.test(url)) path = new URL(url, location.origin).pathname + new URL(url, location.origin).search + new URL(url, location.origin).hash;
+    } catch { /* keep url */ }
+    if (discourseRouteTo(path)) {
+      scheduleApply();
+      return;
+    }
+    history.pushState({}, "", path);
+    scheduleApply();
+  }
+
+  function bindListPanelClicks(panel) {
+    // 用独立标记，避免旧面板只有 navBound 时永远绑不上软跳转
+    if (!panel || panel.dataset.linkBound === "1") return;
+    panel.dataset.linkBound = "1";
+    panel.addEventListener("click", (e) => {
+      const btn = e.target.closest(".feishu-list-nav-toggle");
+      if (btn && panel.contains(btn)) {
+        e.preventDefault();
+        e.stopPropagation();
+        setListNavOpen(!listNavOpen);
+        return;
+      }
+
+      // 会话/置顶：拦截默认跳转，走 Discourse SPA / pushState
+      const link = e.target.closest("a.feishu-conv, a.feishu-pin, .feishu-list-nav a");
+      if (!link || !panel.contains(link)) return;
+      if (e.defaultPrevented) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      const href = link.getAttribute("href");
+      if (!href || href === "#" || href.startsWith("javascript:")) return;
+      e.preventDefault();
+      e.stopPropagation();
+      navigateInApp(href);
+    });
+  }
+
   function ensureListPanel() {
     let panel = document.querySelector(".feishu-list-panel");
     // 旧面板缺筛选按钮/容器时重建，避免「看得到旧壳、点了没反应」
@@ -1877,23 +1938,12 @@
       panel = null;
     }
     if (panel) {
-      // 已存在：只同步 DOM，不要在每次 applyTheme 里重新取反
-      if (!panel.dataset.navBound) {
-        panel.dataset.navBound = "1";
-        panel.addEventListener("click", (e) => {
-          const btn = e.target.closest(".feishu-list-nav-toggle");
-          if (!btn || !panel.contains(btn)) return;
-          e.preventDefault();
-          e.stopPropagation();
-          setListNavOpen(!listNavOpen);
-        });
-      }
+      bindListPanelClicks(panel);
       applyListNavDom();
       return panel;
     }
     panel = document.createElement("div");
     panel.className = "feishu-list-panel";
-    panel.dataset.navBound = "1";
     panel.innerHTML = `
       <div class="feishu-list-header">
         <div class="feishu-list-title">${ICONS.list}<span>消息</span></div>
@@ -1906,14 +1956,7 @@
       <div class="feishu-list-body"></div>
     `;
     document.body.appendChild(panel);
-
-    panel.addEventListener("click", (e) => {
-      const btn = e.target.closest(".feishu-list-nav-toggle");
-      if (!btn || !panel.contains(btn)) return;
-      e.preventDefault();
-      e.stopPropagation();
-      setListNavOpen(!listNavOpen);
-    });
+    bindListPanelClicks(panel);
     panel.querySelector(".feishu-list-body").addEventListener("scroll", () => {
       const body = panel.querySelector(".feishu-list-body");
       if (body.scrollTop + body.clientHeight >= body.scrollHeight - 120) {
@@ -2017,14 +2060,13 @@
 
   async function loadList(apiPath, force) {
     if (!apiPath) return;
-    const routeKey = location.pathname;
-    if (!force && listState.routeKey === routeKey && listState.topics.length) {
+    // 用列表 API 做缓存键：进帖子时 pathname 会变，但不应重拉会话列表
+    if (!force && listState.apiPath === apiPath && listState.topics.length) {
       syncListActive();
       return;
     }
     if (listState.loading) return;
     listState.loading = true;
-    listState.routeKey = routeKey;
     listState.apiPath = apiPath;
     try {
       const data = await api(apiPath);
@@ -2877,12 +2919,18 @@
     ensureListPanel();
     ensureChatPanel();
     syncListNav();
-    loadList(listApiForPath(pathname), false);
 
     if (isTopic) {
+      // 进帖子：保留当前会话列表，只更新选中态 + 加载右栏
+      if (listState.topics.length && listState.apiPath) {
+        syncListActive();
+      } else {
+        loadList(listState.apiPath || "/latest.json", false);
+      }
       loadTopic(topicIdFromPath(pathname));
       syncNewPostsFromDom();
     } else {
+      loadList(listApiForPath(pathname), false);
       renderChatEmpty();
     }
     syncListActive();
