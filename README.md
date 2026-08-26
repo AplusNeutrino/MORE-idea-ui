@@ -64,6 +64,7 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-feishu.user.js
 - **中栏**：帖子会话列表，支持最新 / 新帖 / 未读 / 热门 / 分类 / 标签路由
 - **右栏**：帖子详情聊天区，点击中栏帖子就地渲染聊天气泡，底部接原生回复框可同屏回帖
 - **原生视图切换**：右栏右上角可随时切回原版界面，选择会记住
+- **隐私头像切换**：中栏标题栏一键把真实头像替换成文字 / 图标伪装，状态会记住
 - **窄屏适配**：宽度 < 1000px 时自动单栏，列表与详情二选一显示
 - **仅浅色模式**：与飞书一致，无暗夜模式
 
@@ -76,6 +77,7 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-feishu.user.js
 | 点击展开分类列表 | ![点击展开分类列表](./snapshot/点击展开分类列表.png) |
 | 点击下拉筛选 | ![点击下拉筛选](./snapshot/点击下拉筛选.png) |
 | hover 头像通知 | ![hover 头像通知](./snapshot/hover%20头像通知.png) |
+| 一键切换隐私头像 | ![一键切换隐私头像](./snapshot/一键切换隐私头像.png) |
 
 ## License
 

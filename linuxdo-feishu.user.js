@@ -52,7 +52,8 @@
     task: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>`,
     contacts: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>`,
     project: `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>`,
-    more: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 14v6M14 17h6"/></svg>`
+    more: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 14v6M14 17h6"/></svg>`,
+    disguise: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>`
   };
 
   const FAVICON_URI = "data:image/x-icon;base64,AAABAAEAMDAAAAEAIACoJQAAFgAAACgAAAAwAAAAYAAAAAEAIAAAAAAAACQAABMLAAATCwAAAAAAAAAAAAD///8A////AP///wf///8U////W////4f///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+G////T////yL///8J////AP///wD///8B////D////2n////R////9P////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////9f///+D///92////EP///wH///8N////hv////L////9//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7////z////hv///wr///9T////8f//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P///zj///+s////+v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+v///6v////x/////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////H///////////////////////////////////////////////////////////////////////////////////////39///7+f//+vj///v5///9/P///f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/P//9/P//+/p///s5P//59z//9jI///KtP//ybP//8q0///Xx///2cn//+je///s5P//8uz///f0///+/v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9vL//+vj///VxP//uJr//5Vp//+FUv//cjX//3Az//9wM///cDP//3Az//9wM///cDT//3g+//+GU///onv//7mc///dz///7OP///n3//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Ls///k2f//t5j//4xc//9xNf//bzL//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDL//3Az//93Pf//jV3//8Sr///n3P//9/P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////08P//4dX//6eD//9+SP//cDP//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDL//3Az//+FUf//u57//+bc///6+P///////////////////////////////////////////////////////////////////////////////////////////////////v7//+7n//+zk///fkj//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wMv//cDP//4ta///Hr///8Or/////////////////////////////////////////////////////////////////////////////////////////////+/n//7KR//9yNv//cDL//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9xNf//qof//+bc///9/f//////////////////////////////////////////////////////////////////////////////////+PX//41c//9xNf//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//5Zq///Xxv///fz/////////////////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xM///cTT//3E0//9xNP//cTT//3Ez//+FT///1MH///z7////////////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xM///cDP/92ww/+xmLf/lYyv/32Ap/99gKf/hYSr/6GQs//FpL//+g07//9XD///+/v//////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xNP//cTP/9Gov/+hkLP/YXCf/x1Mh/7JIGv+kQRb/mDsS/5c7Ev+cPRT/qEQY/7tNHf/aXSj/74BS///l2f//////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9vMv//cTP//G4y/+plLP/eXyn/wlAg/6xFGf+YOxL/mDsS/5k7E/+ZPBP/mjwT/5o8E/+aPBP/mTwT/5k7E/+dPRT/uk4f/+GOa//96eD///7+////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///bzH//20v//t0Ov/hXib/z1Yj/7BHGv+fPhX/mDsS/5k7E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mTsS/6VDGP/am3///vXy////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9uMP//fET//5pv//i0lf/FfFz/nkch/5g6EP+ZPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8FP+mTyn/6cq+//79/f//////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wMv//bjD//3U6//+VZ///wqj//+3l//7////x5eD/0KSR/6xfPf+ZOhH/mjsS/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+bPhb/t3ZZ//fx7v//////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9yNv//j17//7qd///k2P///////////////////////////+DFt/+4d1v/nEAY/5o7E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/nEAY/9u5qv/9/Pv/////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///bzH//39I//+ujP//28z////////////////////////////////////////////v4Nr/w4xw/51FGP+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mz4V/7BmRv/37+v////+////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//28y//9uMP//kmP//8my///39P////////////////////////////////////////////////////7/5OOn/6yJE/+cRRL/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5xBGf/Ztqb//fz7////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///bzL//3g///+vjf//3tD//////////////////////////////////////////////////////////v/5/Ov/zeNL/7jOBf+qign/nEUS/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5s+Ff+uY0L/9u7q/////v//////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9vMf//gkz//7uf///49f////////////////////////////////////////////////////////////7+/P/f7Iv/vNgL/7nWAP+3zgH/qowJ/5xGEv+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+cQBj/17Kh//38+///////////////////////////////////+PX//4hV//9xNP//cDP//3Ay//+SY///z7v///j2/////////////////////////////////////////////////////////////v/9/+31v//B2yD/udYB/7nWAP+51gD/t84B/6uPCf+cRhL/mjsT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+bPhX/rWA///bv6/////7/////////////////////////////+PX//4hV//9xNP//cDP//5lt///dzv////////////////////////////////////////////////////////////////////7/+fzp/83iSf+61gL/udYA/7nWAP+51gD/udYA/7fOAf+rkQj/nUsR/5o6E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mz8W/8eUff/9/Pv/////////////////////////////+PX//4hV//9xNP//mm///+LV///////////////////////////////////////////////////////////////////////+//z/3OuB/7vXCf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+4zwH/rp4H/6NoDf+bPxL/mjoT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/6BHIf/fwbT//vz8////////////////////////+PX//4hV//+dc///49f//////////////////////////////////////////////////////////////////////////f/n8af/wNob/7nWAf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udQA/7S7BP+vmhH/o2kN/5o/D/+YNw3/mDgO/5k5D/+ZOhD/mToQ/5k5D/+YOA7/mDgO/6BHIf/CinH/+PHu/////v//////////////////+/r//8Cm///m3P///////////////////////////////////////////////////////////////////////v/9/+31wP/F3Sv/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nYAP+61gb/tb0H/8GtS//JmH7/vYBl/7VvUf+wZ0j/sGdI/7VvUf+9gGX/ypmE/9/BtP/p1Mv//Pj3/////////////////////////v7///bz//////////////////////////////////////////////////////////////////////////7/9vnd/8vhRP+51gH/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/vNkI/+XyoP/38uv/8uXg/+3c1f/q2ND/6tjQ/+3c1f/y5eD/+fLw///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4++f/0uRb/7vXBv+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/vtkU//f64f////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j75v/S5V3/u9gK/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+61wX/0+Vg//3+9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+Pvl/9HkWf+71wn/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+82An/8PbJ//7//f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v/3++T/0ORW/7vXCf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7rXBP/Q41b//P3z//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f74//P41L/u9cI/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYB/77aFf/w98r//v/9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//3/7fW//8vgQv+71wf/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/u9cG/9jpdP/9/vb///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7++//j75n/xNwn/7rWAv+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+61gP/yN85//f64f////7///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7/+vzr/9jocv/A2hn/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAf/D2yL/8PfI/////f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f75/+z0uv/l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+bwov/1+dn//v/8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3++f/9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//////////////////////////////////////////////////////////////////////////////////////////////////////x/////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////H///+s////+v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+v///6z///85////8P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8f///1L///8K////hf////P////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3////y////hf///w3///8B////EP///3b////g////9f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////9f///9L///9o////D////wH///8A////AP///wn///8i////T////4b///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+H////W////xT///8H////AP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
@@ -109,6 +110,110 @@
   function avatarLetter(name) {
     const s = String(name || "?").trim();
     return (s[0] || "?").toUpperCase();
+  }
+
+  /* ---------- 会话伪装头像（飞书群文字头像 / 图标混用） ---------- */
+  const MASK_AVATAR_KEY = "linuxdo-feishu-mask-avatar"; // "1" = 开
+
+  function isMaskAvatar() {
+    try { return localStorage.getItem(MASK_AVATAR_KEY) === "1"; } catch { return false; }
+  }
+
+  function setMaskAvatar(on) {
+    try { localStorage.setItem(MASK_AVATAR_KEY, on ? "1" : "0"); } catch { /* ignore */ }
+    const panel = document.querySelector(".feishu-list-panel");
+    ensureMaskAvatarToggle(panel);
+    // 列表若还没数据，先别空转；有数据则立刻重绘头像
+    if (listState.topics && listState.topics.length) {
+      renderListRows();
+      renderPins();
+    } else if (panel) {
+      // 兜底：按当前路由拉一次列表再绘
+      loadList(listState.apiPath || listApiForPath(location.pathname) || "/latest.json", true);
+    }
+  }
+
+  /** 从标题取 3～5 字（按标题哈希稳定） */
+  function avatarTextFromTitle(title) {
+    const cleaned = [...String(title || "?").trim()].filter((c) => !/[\s#\[\]【】《》\*·\.\,，。!！?？\-_/\\]/.test(c));
+    const src = cleaned.length ? cleaned : ["?"];
+    let hash = 0;
+    for (const c of src) hash = (hash * 31 + c.charCodeAt(0)) | 0;
+    const n = Math.min(src.length, (Math.abs(hash) % 3) + 3); // 3 / 4 / 5
+    const text = src.slice(0, n).join("");
+    if (/^[a-zA-Z0-9]+$/.test(text)) return text.toUpperCase();
+    return text;
+  }
+
+  /**
+   * 按话题 id 稳定随机：约一半文字圆头像（实心/空心），四分之一 CHAT_ICONS，四分之一 PIN_AVATARS
+   * @returns {{ html: string, bg: string, className: string, styleExtra: string }}
+   */
+  function disguiseAvatarForTopic(topic) {
+    const tid = Math.abs(Number(topic.id) || 0);
+    const seed = (tid * 2654435761) >>> 0;
+    const mode = seed % 4;
+    if (mode <= 1) {
+      const text = avatarTextFromTitle(topic.title);
+      const chars = [...text];
+      const len = chars.length;
+      const color = avatarColor(topic.title || String(tid));
+      const hollow = ((seed >>> 3) % 2) === 1;
+      // 四字排成两行，每行 2 个；其它字数原样
+      const label = len === 4
+        ? `${escapeHtml(chars[0] + chars[1])}<br>${escapeHtml(chars[2] + chars[3])}`
+        : escapeHtml(text);
+      return {
+        html: `<span class="feishu-avatar-text" data-len="${len}">${label}</span>`,
+        bg: hollow ? "#FFFFFF" : color,
+        className: hollow ? "is-text-avatar is-hollow" : "is-text-avatar is-solid",
+        styleExtra: hollow
+          ? `color:${color};border:1.5px solid ${color};`
+          : `color:#fff;border:1.5px solid ${color};`
+      };
+    }
+    if (mode === 2) {
+      return {
+        html: `<img src="${CHAT_ICONS[(tid * 31) % CHAT_ICONS.length]}" alt="" loading="lazy">`,
+        bg: "transparent",
+        className: "",
+        styleExtra: "border:none;"
+      };
+    }
+    return {
+      html: `<img src="${PIN_AVATARS[tid % PIN_AVATARS.length]}" alt="" loading="lazy">`,
+      bg: "transparent",
+      className: "",
+      styleExtra: "border:none;"
+    };
+  }
+
+  function ensureMaskAvatarToggle(panel) {
+    if (!panel) return;
+    const actions = panel.querySelector(".feishu-list-actions");
+    if (!actions) return;
+    let btn = actions.querySelector(".feishu-mask-avatar-toggle");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "feishu-icon-btn feishu-mask-avatar-toggle";
+      btn.innerHTML = ICONS.disguise;
+      actions.insertBefore(btn, actions.firstChild);
+    }
+    // 直接绑在按钮上，避免旧面板 linkBound 已占用导致点不到
+    if (btn.dataset.bound !== "1") {
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+        setMaskAvatar(!isMaskAvatar());
+      });
+    }
+    const on = isMaskAvatar();
+    btn.title = on ? "伪装头像：开（点击恢复真实头像）" : "伪装头像：关（点击开启）";
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.classList.toggle("is-on", on);
   }
 
   function fullAvatarUrl(template) {
@@ -654,6 +759,22 @@
       color: #fff; font-size: 13px; font-weight: 600;
       overflow: hidden;
     }
+    .feishu-pin-avatar.is-text-avatar {
+      box-sizing: border-box;
+      padding: 2px;
+      text-align: center;
+    }
+    .feishu-pin-avatar .feishu-avatar-text {
+      line-height: 1.05; font-weight: 600;
+      overflow: hidden; word-break: break-all;
+      font-size: 9px;
+    }
+    .feishu-pin-avatar .feishu-avatar-text[data-len="3"] { font-size: 11px; }
+    .feishu-pin-avatar .feishu-avatar-text[data-len="4"] {
+      font-size: 10px; line-height: 1.15;
+      width: 2.2em; text-align: center;
+    }
+    .feishu-pin-avatar .feishu-avatar-text[data-len="5"] { font-size: 8px; }
     .feishu-pin-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .feishu-pin-name {
       font-size: 11px; color: var(--fs-text-2);
@@ -794,7 +915,33 @@
       display: flex; align-items: center; justify-content: center;
       color: #fff; font-size: 15px; font-weight: 600;
     }
+    /* 伪装文字头像：保持圆形；实心 / 空心；字数 3～5 */
+    .feishu-conv-avatar.is-text-avatar {
+      box-sizing: border-box;
+      padding: 3px;
+      letter-spacing: 0;
+      text-align: center;
+    }
+    .feishu-conv-avatar .feishu-avatar-text {
+      line-height: 1.05; font-weight: 600;
+      overflow: hidden;
+      word-break: break-all;
+      max-width: 100%;
+      font-size: 10px;
+    }
+    .feishu-conv-avatar .feishu-avatar-text[data-len="3"] { font-size: 12px; }
+    /* 四字：两行，每行 2 个 */
+    .feishu-conv-avatar .feishu-avatar-text[data-len="4"] {
+      font-size: 11px;
+      line-height: 1.15;
+      width: 2.2em;
+      text-align: center;
+    }
+    .feishu-conv-avatar .feishu-avatar-text[data-len="5"] { font-size: 9px; }
     .feishu-conv-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .feishu-mask-avatar-toggle.is-on {
+      color: var(--fs-accent); background: var(--fs-accent-soft);
+    }
     .feishu-conv-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
     .feishu-conv-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
     .feishu-conv-name {
@@ -2001,10 +2148,19 @@
   }
 
   function bindListPanelClicks(panel) {
-    // 用独立标记，避免旧面板只有 navBound 时永远绑不上软跳转
-    if (!panel || panel.dataset.linkBound === "1") return;
-    panel.dataset.linkBound = "1";
+    // v2：含伪装头像等逻辑；旧 v1 面板需重绑
+    if (!panel || panel.dataset.linkBound === "2") return;
+    panel.dataset.linkBound = "2";
     panel.addEventListener("click", (e) => {
+      // 伪装按钮已在按钮自身监听；这里仍兜底一次
+      const maskBtn = e.target.closest(".feishu-mask-avatar-toggle");
+      if (maskBtn && panel.contains(maskBtn)) {
+        e.preventDefault();
+        e.stopPropagation();
+        setMaskAvatar(!isMaskAvatar());
+        return;
+      }
+
       const btn = e.target.closest(".feishu-list-nav-toggle");
       if (btn && panel.contains(btn)) {
         e.preventDefault();
@@ -2035,6 +2191,7 @@
     }
     if (panel) {
       bindListPanelClicks(panel);
+      ensureMaskAvatarToggle(panel);
       applyListNavDom();
       return panel;
     }
@@ -2044,6 +2201,7 @@
       <div class="feishu-list-header">
         <div class="feishu-list-title">${ICONS.list}<span>消息</span></div>
         <div class="feishu-list-actions">
+          <button type="button" class="feishu-icon-btn feishu-mask-avatar-toggle" title="伪装头像：关（点击开启）" aria-pressed="false">${ICONS.disguise}</button>
           <button type="button" class="feishu-icon-btn feishu-list-nav-toggle" title="展开筛选" aria-expanded="false">${ICONS.chevronDown}</button>
         </div>
       </div>
@@ -2053,6 +2211,7 @@
     `;
     document.body.appendChild(panel);
     bindListPanelClicks(panel);
+    ensureMaskAvatarToggle(panel);
     panel.querySelector(".feishu-list-body").addEventListener("scroll", () => {
       const body = panel.querySelector(".feishu-list-body");
       if (body.scrollTop + body.clientHeight >= body.scrollHeight - 120) {
@@ -2071,14 +2230,27 @@
     const poster = (topic.posters || [])[0];
     const user = poster && usersById ? usersById[poster.user_id] : null;
     const name = (user && user.username) || topic.last_poster_username || "?";
-    // 约四分之一的会话用飞书彩色图标当头像（模拟应用/机器人会话，按话题 id 稳定取值）
     const tid = Math.abs(Number(topic.id) || 0);
-    const useIcon = tid % 4 === 1;
-    const avatar = useIcon
-      ? `<img src="${CHAT_ICONS[(tid * 31) % CHAT_ICONS.length]}" alt="" loading="lazy">`
-      : user && user.avatar_template
-        ? `<img src="${escapeHtml(fullAvatarUrl(user.avatar_template))}" alt="" loading="lazy">`
-        : escapeHtml(avatarLetter(name));
+    let avatarHtml;
+    let avatarBg;
+    let avatarClass = "";
+    let avatarStyleExtra = "";
+    if (isMaskAvatar()) {
+      const d = disguiseAvatarForTopic(topic);
+      avatarHtml = d.html;
+      avatarBg = d.bg;
+      avatarClass = d.className ? ` ${d.className}` : "";
+      avatarStyleExtra = d.styleExtra || "";
+    } else {
+      // 约四分之一的会话用飞书彩色图标当头像（模拟应用/机器人会话，按话题 id 稳定取值）
+      const useIcon = tid % 4 === 1;
+      avatarHtml = useIcon
+        ? `<img src="${CHAT_ICONS[(tid * 31) % CHAT_ICONS.length]}" alt="" loading="lazy">`
+        : user && user.avatar_template
+          ? `<img src="${escapeHtml(fullAvatarUrl(user.avatar_template))}" alt="" loading="lazy">`
+          : escapeHtml(avatarLetter(name));
+      avatarBg = useIcon ? "transparent" : avatarColor(name);
+    }
     const unread = topic.unread > 0 ? topic.unread : (topic.new_posts > 0 ? topic.new_posts : 0);
     const replyCount = Math.max(0, (topic.posts_count || 1) - 1);
     const summary = topic.last_poster_username
@@ -2086,7 +2258,7 @@
       : `${topic.posts_count || 0} 回复`;
     return `
       <a class="feishu-conv" href="${escapeHtml(topicHref(topic))}" data-topic-id="${topic.id}">
-        <span class="feishu-conv-avatar" style="background:${useIcon ? "transparent" : avatarColor(name)}">${avatar}</span>
+        <span class="feishu-conv-avatar${avatarClass}" style="background:${avatarBg};${avatarStyleExtra}">${avatarHtml}</span>
         <span class="feishu-conv-info">
           <span class="feishu-conv-top">
             <span class="feishu-conv-name">${escapeHtml(topic.title)}</span>
@@ -2110,12 +2282,25 @@
       return;
     }
     box.style.display = "";
-    // 头像：5 个群组图标按话题 id 稳定「随机」取一个
+    const mask = isMaskAvatar();
     box.innerHTML = pins.map((t) => {
-      const icon = PIN_AVATARS[Math.abs(Number(t.id) || 0) % PIN_AVATARS.length];
+      let inner;
+      let bg = "transparent";
+      let cls = "";
+      let styleExtra = "";
+      if (mask) {
+        const d = disguiseAvatarForTopic(t);
+        inner = d.html;
+        bg = d.bg;
+        cls = d.className ? ` ${d.className}` : "";
+        styleExtra = d.styleExtra || "";
+      } else {
+        const icon = PIN_AVATARS[Math.abs(Number(t.id) || 0) % PIN_AVATARS.length];
+        inner = `<img src="${icon}" alt="" loading="lazy">`;
+      }
       return `
         <a class="feishu-pin" href="${escapeHtml(topicHref(t))}" title="${escapeHtml(t.title)}">
-          <span class="feishu-pin-avatar"><img src="${icon}" alt="" loading="lazy"></span>
+          <span class="feishu-pin-avatar${cls}" style="background:${bg};${styleExtra}">${inner}</span>
           <span class="feishu-pin-name">${escapeHtml(t.title.slice(0, 6))}</span>
         </a>`;
     }).join("");
