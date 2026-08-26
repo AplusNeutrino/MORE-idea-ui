@@ -1,10 +1,14 @@
-# Linux DO · JetBrains / Darcula 外观
+# Linux DO · JetBrains / 飞书 风格外观
 
-油猴脚本：把 [linux.do](https://linux.do/) 换成 **JetBrains IDE / Darcula** 风格。
+把 [linux.do](https://linux.do/) 换成 **JetBrains IDE** 或**飞书 IM** 风格。只换皮，不碰数据——内容、链接、按钮与交互全部保留。
 
-只换皮，不碰数据——内容、链接、按钮与交互全部保留。
+> ⚠️ 两个脚本**互斥**，同一时刻只启用一个。同时启用时飞书脚本会自动避让（控制台有提示）。
 
-## 安装
+## 脚本一：JetBrains / Darcula 外观（`linuxdo-idea.user.js`）
+
+换成 **JetBrains IDE / Darcula** 风格。
+
+### 安装
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/)（或 Violentmonkey）
 2. 打开 [`linuxdo-idea.user.js`](./linuxdo-idea.user.js)，点 **Raw** 后安装
@@ -16,7 +20,7 @@ Raw 直链（仓库公开后可用）：
 https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-idea.user.js
 ```
 
-## 功能
+### 功能
 
 - **IDEA / PyCharm 切换**：点击顶栏品牌标，选择写入 `localStorage`
 - **主页**：话题列表伪装为 **Git Log**（多泳道 SVG 图谱）
@@ -29,21 +33,55 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-idea.user.js
 - **颜色模式**：跟随 linux.do 浅色 / 深色 / 自动；深色对齐 Darcula
 - **SPA**：站内跳转与前进后退后自动重新套用样式
 
-## 截图
+### 截图
 
 | | |
 | --- | --- |
-| 加载页面 | ![Splash](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/splash.png) |
-| 主页 Git Log | ![Home](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/home-git-log.png) |
-| 话题 · IDEA | ![Topic IDEA](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/topic-idea.png) |
-| 话题 · PyCharm | ![Topic PyCharm](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/topic-pycharm.png) |
-| Hover 链接显示图片 | ![Image hover](https://github.com/czm15053/linuxdo-idea-ui/raw/main/snapshot/image-hover.png) |
+| 闪屏 | ![闪屏](./snapshot/splash.png) |
+| 主页 Git Log | ![主页 Git Log](./snapshot/home-git-log.png) |
+| 话题 · IDEA | ![话题 · IDEA](./snapshot/topic-idea.png) |
+| 话题 · PyCharm | ![话题 · PyCharm](./snapshot/topic-pycharm.png) |
+| Hover 链接显示图片 | ![Hover 链接显示图片](./snapshot/image-hover.png) |
+
+## 脚本二：飞书 IM 外观（`linuxdo-feishu.user.js`）
+
+换成**飞书即时消息**风格，无顶栏、三栏主从同屏。
+
+### 安装
+
+同上，安装 [`linuxdo-feishu.user.js`](./linuxdo-feishu.user.js) 即可。
+
+Raw 直链（仓库公开后可用）：
+
+```text
+https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-feishu.user.js
+```
+
+### 功能
+
+- **左一 rail**：像素级复刻飞书文字导航；仅右上角圆圈按钮可用，用于展开 / 收起大类
+- **左二展开栏**：站点原生侧栏原样搬入，内容、文案、未读标记完全跟随原网页
+- **中栏**：帖子会话列表，支持最新 / 新帖 / 未读 / 热门 / 分类 / 标签路由
+- **右栏**：帖子详情聊天区，点击中栏帖子就地渲染聊天气泡，底部接原生回复框可同屏回帖
+- **原生视图切换**：右栏右上角可随时切回原版界面，选择会记住
+- **窄屏适配**：宽度 < 1000px 时自动单栏，列表与详情二选一显示
+- **仅浅色模式**：与飞书一致，无暗夜模式
+
+### 截图
+
+| | |
+| --- | --- |
+| 帖子详情 | ![帖子详情](./snapshot/帖子详情.png) |
+| 个人视角 | ![个人视角](./snapshot/个人视角.png) |
+| 点击展开分类列表 | ![点击展开分类列表](./snapshot/点击展开分类列表.png) |
+| 点击下拉筛选 | ![点击下拉筛选](./snapshot/点击下拉筛选.png) |
+| hover 头像通知 | ![hover 头像通知](./snapshot/hover%20头像通知.png) |
 
 ## License
 
 MIT © czm15053
 
-JetBrains、IntelliJ IDEA、PyCharm 均为 JetBrains s.r.o. 商标。本项目为非官方、非关联作品。
+JetBrains、IntelliJ IDEA、PyCharm 均为 JetBrains s.r.o. 商标；飞书为字节跳动旗下产品商标。本项目为非官方、非关联作品。
 
 ## 友链
 
