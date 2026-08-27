@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Linux DO · 飞书 IM 外观
 // @namespace    https://linux.do/
-// @version      0.2.2
+// @version      0.2.3
 // @description  飞书风格的 LinuxDo
 // @author       czm15053
 // @match        https://linux.do/*
@@ -59,6 +59,21 @@
     moon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 1 0 9.5 9.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
     sun: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
   };
+
+  /* ============================== 内联 SVG 图标：实心版（左侧栏装饰用） ============================== */
+
+  // 最左导航栏与窄图标条是飞书复刻的装饰导航，统一用实心图标；功能按钮继续用上方线性 ICONS，保证小尺寸可读性
+  const FILLED_ICONS = {
+    chat: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>`,
+    calendar: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.7 2h2.6v3H6.7zM14.7 2h2.6v3h-2.6z"/><path d="M4 7c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v2H4V7z"/><path d="M4 11h16v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6z"/></svg>`,
+    cloud: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>`,
+    wiki: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 2A2.5 2.5 0 0 0 4 4.5v15a2.5 2.5 0 0 1 2.5-2.5H21V2H6.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H21v5H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>`,
+    task: `<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm3.66 6.34a1.15 1.15 0 0 1 0 1.63l-4.05 4.05c-.45.45-1.18.45-1.63 0l-2.14-2.14a1.15 1.15 0 0 1 1.63-1.63l1.32 1.32 3.24-3.24c.45-.45 1.18-.45 1.63 0z"/></svg>`,
+    contacts: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM12 14c4.6 0 8 2.35 8 5.4v.6a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20v-.6c0-3.05 3.4-5.4 8-5.4z"/></svg>`,
+    more: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm10 0h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM5 13h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z"/><path d="M17 14v6M14 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`
+  };
+  /** 导航装饰优先取实心版本，未收录的键回退线性 ICONS */
+  const navIcon = (key) => FILLED_ICONS[key] || ICONS[key];
 
   const FAVICON_URI = "data:image/x-icon;base64,AAABAAEAMDAAAAEAIACoJQAAFgAAACgAAAAwAAAAYAAAAAEAIAAAAAAAACQAABMLAAATCwAAAAAAAAAAAAD///8A////AP///wf///8U////W////4f///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+G////T////yL///8J////AP///wD///8B////D////2n////R////9P////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////9f///+D///92////EP///wH///8N////hv////L////9//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7////z////hv///wr///9T////8f//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P///zj///+s////+v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+v///6v////x/////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////H///////////////////////////////////////////////////////////////////////////////////////39///7+f//+vj///v5///9/P///f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/P//9/P//+/p///s5P//59z//9jI///KtP//ybP//8q0///Xx///2cn//+je///s5P//8uz///f0///+/v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9vL//+vj///VxP//uJr//5Vp//+FUv//cjX//3Az//9wM///cDP//3Az//9wM///cDT//3g+//+GU///onv//7mc///dz///7OP///n3//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Ls///k2f//t5j//4xc//9xNf//bzL//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDL//3Az//93Pf//jV3//8Sr///n3P//9/P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////08P//4dX//6eD//9+SP//cDP//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDL//3Az//+FUf//u57//+bc///6+P///////////////////////////////////////////////////////////////////////////////////////////////////v7//+7n//+zk///fkj//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wMv//cDP//4ta///Hr///8Or/////////////////////////////////////////////////////////////////////////////////////////////+/n//7KR//9yNv//cDL//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9xNf//qof//+bc///9/f//////////////////////////////////////////////////////////////////////////////////+PX//41c//9xNf//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//5Zq///Xxv///fz/////////////////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xM///cTT//3E0//9xNP//cTT//3Ez//+FT///1MH///z7////////////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xM///cDP/92ww/+xmLf/lYyv/32Ap/99gKf/hYSr/6GQs//FpL//+g07//9XD///+/v//////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xNP//cTP/9Gov/+hkLP/YXCf/x1Mh/7JIGv+kQRb/mDsS/5c7Ev+cPRT/qEQY/7tNHf/aXSj/74BS///l2f//////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9vMv//cTP//G4y/+plLP/eXyn/wlAg/6xFGf+YOxL/mDsS/5k7E/+ZPBP/mjwT/5o8E/+aPBP/mTwT/5k7E/+dPRT/uk4f/+GOa//96eD///7+////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///bzH//20v//t0Ov/hXib/z1Yj/7BHGv+fPhX/mDsS/5k7E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mTsS/6VDGP/am3///vXy////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9uMP//fET//5pv//i0lf/FfFz/nkch/5g6EP+ZPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8FP+mTyn/6cq+//79/f//////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wMv//bjD//3U6//+VZ///wqj//+3l//7////x5eD/0KSR/6xfPf+ZOhH/mjsS/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+bPhb/t3ZZ//fx7v//////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9yNv//j17//7qd///k2P///////////////////////////+DFt/+4d1v/nEAY/5o7E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/nEAY/9u5qv/9/Pv/////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///bzH//39I//+ujP//28z////////////////////////////////////////////v4Nr/w4xw/51FGP+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mz4V/7BmRv/37+v////+////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//28y//9uMP//kmP//8my///39P////////////////////////////////////////////////////7/5OOn/6yJE/+cRRL/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5xBGf/Ztqb//fz7////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///bzL//3g///+vjf//3tD//////////////////////////////////////////////////////////v/5/Ov/zeNL/7jOBf+qign/nEUS/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5s+Ff+uY0L/9u7q/////v//////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9vMf//gkz//7uf///49f////////////////////////////////////////////////////////////7+/P/f7Iv/vNgL/7nWAP+3zgH/qowJ/5xGEv+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+cQBj/17Kh//38+///////////////////////////////////+PX//4hV//9xNP//cDP//3Ay//+SY///z7v///j2/////////////////////////////////////////////////////////////v/9/+31v//B2yD/udYB/7nWAP+51gD/t84B/6uPCf+cRhL/mjsT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+bPhX/rWA///bv6/////7/////////////////////////////+PX//4hV//9xNP//cDP//5lt///dzv////////////////////////////////////////////////////////////////////7/+fzp/83iSf+61gL/udYA/7nWAP+51gD/udYA/7fOAf+rkQj/nUsR/5o6E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mz8W/8eUff/9/Pv/////////////////////////////+PX//4hV//9xNP//mm///+LV///////////////////////////////////////////////////////////////////////+//z/3OuB/7vXCf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+4zwH/rp4H/6NoDf+bPxL/mjoT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/6BHIf/fwbT//vz8////////////////////////+PX//4hV//+dc///49f//////////////////////////////////////////////////////////////////////////f/n8af/wNob/7nWAf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udQA/7S7BP+vmhH/o2kN/5o/D/+YNw3/mDgO/5k5D/+ZOhD/mToQ/5k5D/+YOA7/mDgO/6BHIf/CinH/+PHu/////v//////////////////+/r//8Cm///m3P///////////////////////////////////////////////////////////////////////v/9/+31wP/F3Sv/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nYAP+61gb/tb0H/8GtS//JmH7/vYBl/7VvUf+wZ0j/sGdI/7VvUf+9gGX/ypmE/9/BtP/p1Mv//Pj3/////////////////////////v7///bz//////////////////////////////////////////////////////////////////////////7/9vnd/8vhRP+51gH/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/vNkI/+XyoP/38uv/8uXg/+3c1f/q2ND/6tjQ/+3c1f/y5eD/+fLw///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4++f/0uRb/7vXBv+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/vtkU//f64f////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j75v/S5V3/u9gK/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+61wX/0+Vg//3+9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+Pvl/9HkWf+71wn/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+82An/8PbJ//7//f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v/3++T/0ORW/7vXCf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7rXBP/Q41b//P3z//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f74//P41L/u9cI/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYB/77aFf/w98r//v/9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//3/7fW//8vgQv+71wf/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/u9cG/9jpdP/9/vb///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7++//j75n/xNwn/7rWAv+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+61gP/yN85//f64f////7///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7/+vzr/9jocv/A2hn/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAf/D2yL/8PfI/////f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f75/+z0uv/l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+bwov/1+dn//v/8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3++f/9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//////////////////////////////////////////////////////////////////////////////////////////////////////x/////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////H///+s////+v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+v///6z///85////8P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8f///1L///8K////hf////P////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3////y////hf///w3///8B////EP///3b////g////9f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////9f///9L///9o////D////wH///8A////AP///wn///8i////T////4b///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+H////W////xT///8H////AP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
@@ -871,6 +886,50 @@
       height: 2px; background: var(--fs-accent); border-radius: 1px;
     }
     .feishu-chat-tab .feishu-nav2-cat-dot { width: 8px; height: 8px; border-radius: 2px; margin: 0; }
+
+    /* ---------- 栏间拖拽调宽 ---------- */
+    .feishu-list-resizer,
+    .feishu-rail-resizer {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 9px;
+      transform: translateX(-50%);
+      cursor: col-resize;
+      touch-action: none;
+    }
+    .feishu-list-resizer {
+      left: calc(var(--fs-nav) + var(--fs-nav2w) + var(--fs-strip) + var(--fs-list));
+      z-index: 440; /* 高于聊天面板(420)，低于通知浮层 */
+    }
+    .feishu-rail-resizer {
+      left: var(--fs-nav);
+      z-index: 405; /* 高于导航栏(400)，低于通知浮层 */
+    }
+    html.feishu-nav2-open .feishu-rail-resizer { display: none; } /* 抽屉展开时避免与原生侧栏重叠 */
+    .feishu-list-resizer::after,
+    .feishu-rail-resizer::after {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 2px;
+      transform: translateX(-50%);
+      background: var(--fs-border);
+      transition: background 0.15s;
+    }
+    .feishu-list-resizer:hover::after,
+    .feishu-list-resizer.dragging::after,
+    .feishu-rail-resizer:hover::after,
+    .feishu-rail-resizer.dragging::after { background: var(--fs-accent); }
+    html:not(.${ROOT_CLASS}) .feishu-list-resizer,
+    html:not(.${ROOT_CLASS}) .feishu-rail-resizer { display: none; }
+    body.feishu-col-resizing,
+    body.feishu-col-resizing * {
+      cursor: col-resize !important;
+      user-select: none !important;
+    }
+    @media (max-width: 1000px) {
+      .feishu-list-resizer { display: none; }
+    }
 
     /* ---------- 隐藏原生主内容（三栏路由） ---------- */
     .${ROOT_CLASS}.${LOCK_CLASS} body { overflow: hidden !important; }
@@ -1708,10 +1767,10 @@
     const items = document.createElement("div");
     items.className = "feishu-rail-items";
     items.innerHTML =
-      `<div class="feishu-rail-item active" data-rail-key="chat">${ICONS.chat}<span>消息</span>` +
+      `<div class="feishu-rail-item active" data-rail-key="chat">${navIcon("chat")}<span>消息</span>` +
       `<span class="feishu-rail-badge" style="display:none"></span></div>` +
       RAIL_DECO_ITEMS.map((item) =>
-        `<div class="feishu-rail-item">${ICONS[item.icon]}<span>${item.label}</span></div>`
+        `<div class="feishu-rail-item">${navIcon(item.icon)}<span>${item.label}</span></div>`
       ).join("");
     rail.appendChild(items);
 
@@ -2211,6 +2270,14 @@
     usersById: {}
   };
 
+  const RAIL_W_KEY = "linuxdo-feishu-nav-w"; // 左侧导航栏宽度持久化（像素）
+  const RAIL_W_MIN = 180;
+  const RAIL_W_MAX = 480;
+
+  const LIST_W_KEY = "linuxdo-feishu-list-w"; // 中栏宽度持久化（像素）
+  const LIST_W_MIN = 280;
+  const LIST_W_MAX = 640;
+
   const LIST_NAV_KEY = "linuxdo-feishu-list-nav"; // "1" = 展开中栏筛选
   // 内存态优先，避免 MutationObserver 回写时把展开瞬间打回去
   let listNavOpen = (() => {
@@ -2429,6 +2496,7 @@
       bindListPanelClicks(panel);
       ensureMaskAvatarToggle(panel);
       applyListNavDom();
+      ensureListResizer();
       return panel;
     }
     panel = document.createElement("div");
@@ -2448,6 +2516,7 @@
     document.body.appendChild(panel);
     bindListPanelClicks(panel);
     ensureMaskAvatarToggle(panel);
+    ensureListResizer();
     panel.querySelector(".feishu-list-body").addEventListener("scroll", () => {
       const body = panel.querySelector(".feishu-list-body");
       if (body.scrollTop + body.clientHeight >= body.scrollHeight - 120) {
@@ -2456,6 +2525,130 @@
     });
     applyListNavDom();
     return panel;
+  }
+
+  /* ---------- 会话列表宽度拖拽 ---------- */
+
+  function getCustomListWidth() {
+    try {
+      const w = Number(localStorage.getItem(LIST_W_KEY));
+      return Number.isFinite(w) && w >= LIST_W_MIN && w <= LIST_W_MAX ? Math.round(w) : 0;
+    } catch { return 0; }
+  }
+
+  function applyListWidth(px) {
+    if (px) document.documentElement.style.setProperty("--fs-list", px + "px");
+    else document.documentElement.style.removeProperty("--fs-list");
+  }
+
+  /** 窄屏走响应式规则，不应用自定义宽度 */
+  function syncListWidthPref() {
+    applyListWidth(window.matchMedia("(max-width: 1280px)").matches ? 0 : getCustomListWidth());
+  }
+
+  /** 列分隔条通用拖拽：按下落在把手，move/up 挂 window，即使指针滑出热区也不会中断 */
+  function attachColumnDrag(handle, opts) {
+    let dragging = false;
+    let startX = 0;
+    let startW = 0;
+    let lastW = 0;
+
+    handle.addEventListener("pointerdown", (e) => {
+      const w = opts.width();
+      if (!Number.isFinite(w)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      dragging = true;
+      startX = e.clientX;
+      startW = w;
+      lastW = w;
+      handle.classList.add("dragging");
+      document.body.classList.add("feishu-col-resizing");
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const cap = opts.maxWidth ? opts.maxWidth() : opts.max;
+      const maxWidth = Math.max(opts.min, Math.min(opts.max, cap));
+      lastW = Math.round(Math.min(maxWidth, Math.max(opts.min, startW + e.clientX - startX)));
+      opts.apply(lastW);
+    });
+
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove("dragging");
+      document.body.classList.remove("feishu-col-resizing");
+      try { localStorage.setItem(opts.key, String(lastW)); } catch { /* ignore */ }
+    };
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+
+    handle.addEventListener("dblclick", () => {
+      try { localStorage.removeItem(opts.key); } catch { /* ignore */ }
+      opts.reset();
+    });
+  }
+
+  function getCustomNavWidth() {
+    try {
+      const w = Number(localStorage.getItem(RAIL_W_KEY));
+      return Number.isFinite(w) && w >= RAIL_W_MIN && w <= RAIL_W_MAX ? Math.round(w) : 0;
+    } catch { return 0; }
+  }
+
+  function applyNavWidth(px) {
+    if (px) document.documentElement.style.setProperty("--fs-nav", px + "px");
+    else document.documentElement.style.removeProperty("--fs-nav");
+  }
+
+  /** 左侧导航栏右缘：拖拽调宽（布局偏移全部走 --fs-nav，自动跟随） */
+  function ensureRailResizer() {
+    let handle = document.querySelector(".feishu-rail-resizer");
+    if (handle) return handle;
+
+    handle = document.createElement("div");
+    handle.className = "feishu-rail-resizer";
+    handle.title = "拖拽调整左侧栏宽度（双击恢复默认）";
+    attachColumnDrag(handle, {
+      key: RAIL_W_KEY,
+      min: RAIL_W_MIN,
+      max: RAIL_W_MAX,
+      width: () => document.querySelector(".feishu-rail")?.getBoundingClientRect().width ?? NaN,
+      maxWidth: () => window.innerWidth - 700, // 保证右侧至少留出 strip+列表+聊天
+      apply: applyNavWidth,
+      reset: () => applyNavWidth(0)
+    });
+    const stored = getCustomNavWidth();
+    if (stored) applyNavWidth(stored);
+    document.body.appendChild(handle);
+    return handle;
+  }
+
+  function ensureListResizer() {
+    let handle = document.querySelector(".feishu-list-resizer");
+    if (handle) return handle;
+
+    handle = document.createElement("div");
+    handle.className = "feishu-list-resizer";
+    handle.title = "拖拽调整会话列表宽度（双击恢复默认）";
+    attachColumnDrag(handle, {
+      key: LIST_W_KEY,
+      min: LIST_W_MIN,
+      max: LIST_W_MAX,
+      width: () => document.querySelector(".feishu-list-panel")?.getBoundingClientRect().width ?? NaN,
+      maxWidth: () => {
+        const left = document.querySelector(".feishu-list-panel")?.getBoundingClientRect().left;
+        return Number.isFinite(left) ? window.innerWidth - left - 320 : LIST_W_MAX; // 给聊天区留出最小可读空间
+      },
+      apply: applyListWidth,
+      reset: () => applyListWidth(0)
+    });
+
+    syncListWidthPref();
+    window.addEventListener("resize", () => syncListWidthPref());
+    document.body.appendChild(handle);
+    return handle;
   }
 
   function topicHref(topic) {
@@ -3390,6 +3583,8 @@
     document.querySelector(".feishu-chat-panel")?.remove();
     document.querySelector(".feishu-rail")?.remove();
     document.querySelector(".feishu-strip")?.remove();
+    document.querySelector(".feishu-list-resizer")?.remove();
+    document.querySelector(".feishu-rail-resizer")?.remove();
   }
 
   function applyTheme() {
@@ -3422,6 +3617,7 @@
 
     ensureRail();
     ensureStrip();
+    ensureRailResizer();
 
     const pathname = location.pathname;
     const isTopic = isTopicPath(pathname);
@@ -3435,6 +3631,7 @@
       // rail 常驻，展开栏为原生侧栏；仅移除中右栏
       document.querySelector(".feishu-list-panel")?.remove();
       document.querySelector(".feishu-chat-panel")?.remove();
+      document.querySelector(".feishu-list-resizer")?.remove();
       return;
     }
 
