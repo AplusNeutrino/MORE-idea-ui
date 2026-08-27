@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Linux DO · 钉钉 IM 外观
 // @namespace    https://linux.do/
-// @version      0.3.0
+// @version      0.4.2
 // @description  钉钉风格的 LinuxDo
 // @author       czm15053
 // @match        https://linux.do/*
@@ -18,8 +18,10 @@
   const STYLE_ID = "linuxdo-dingtalk-theme";
   const FAVICON_ID = "dingtalk-favicon";
   const ROOT_CLASS = "dingtalk-im-theme";
+  const DARK_CLASS = "dingtalk-dark";
   const LOCK_CLASS = "dingtalk-locked"; // 仅三栏路由挂载：隐藏原生主内容
   const VIEW_KEY = "linuxdo-dingtalk-view"; // "im" | "native"
+  const DARK_KEY = "linuxdo-dingtalk-dark"; // "1" = 深色
 
   const RAIL_WIDTH = 110; // 最左图标+文字横向导航（可拖拽调宽）
   const NAV2_WIDTH = 240; // 展开栏（原生侧栏原样搬入，默认收起）
@@ -84,7 +86,9 @@
     aitable: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4.5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M4 9.5h16M9.6 9.5v10M15.4 9.5v10" stroke="currentColor" stroke-width="1.7"/></svg>`,
     aimic: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="9" y="3.5" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`,
     monitor: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 20.5h6M12 17v3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-    at: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M15.2 8.8v4.4a2.4 2.4 0 0 0 4.8 0V12a8 8 0 1 0-3.4 6.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
+    at: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M15.2 8.8v4.4a2.4 2.4 0 0 0 4.8 0V12a8 8 0 1 0-3.4 6.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
+    moon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 1 0 9.5 9.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+    sun: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
   };
   ICONS.chat = ICONS.msg;
   ICONS.list = ICONS.msg;
@@ -207,6 +211,48 @@
     return `<span class="dingtalk-conv-avatar is-grid-mask" style="background:transparent">${cells.join("")}</span>`;
   }
 
+
+
+  /** 匿名模式下伪装成工作会话标题（按 topic.id 稳定取值） */
+  const MASK_WORK_ORGS = ["产品", "研发", "设计", "运营", "市场", "销售", "财务", "人力", "法务", "客服", "数据", "增长"];
+  const MASK_WORK_OBJS = ["需求", "方案", "进度", "指标", "预算", "版本", "活动", "合同", "报表", "问题", "排期", "复盘"];
+  const MASK_WORK_ACTS = ["同步群", "评审会", "对齐会", "周会", "跟进群", "值班群", "项目组", "讨论组", "协作群", "拉通会"];
+  const MASK_WORK_TITLES = [
+    "产品需求评审", "本周工作同步", "技术方案讨论", "项目进度对齐", "线上问题排查",
+    "发版 Checklist", "设计稿确认", "客户反馈跟进", "OKR 季度对齐", "数据报表复核",
+    "运营活动排期", "合同条款评审", "预算审批沟通", "招聘面试安排", "安全合规检查",
+    "接口联调纪要", "周会待办汇总", "版本回归测试", "供应商比价", "权限申请流程",
+    "内容选题讨论", "监控告警复盘", "培训材料更新", "绩效面谈准备", "跨组协作排期",
+    "需求优先级排序", "灰度发布观察", "客服工单升级", "品牌物料确认", "财报数据核对",
+    "会议室预约冲突", "出差行程确认", "法务意见回复", "新员工 onboarding", "依赖升级评估",
+    "压测结果同步", "埋点方案评审", "SLA 达标复盘", "渠道投放优化", "库存预警处理"
+  ];
+
+  function disguiseTitleForTopic(topic) {
+    const tid = Math.abs(Number(topic && topic.id) || 0);
+    // 打散相邻 id，避免列表里标题连片重复
+    const seed = (tid * 2654435761) >>> 0;
+    // 约一半用组合群名（更像飞书会话），一半用固定工作标题
+    if ((seed % 2) === 0) {
+      const org = MASK_WORK_ORGS[seed % MASK_WORK_ORGS.length];
+      const obj = MASK_WORK_OBJS[(seed >>> 3) % MASK_WORK_OBJS.length];
+      const act = MASK_WORK_ACTS[(seed >>> 7) % MASK_WORK_ACTS.length];
+      const mode = (seed >>> 11) % 3;
+      if (mode === 0) return `${org}${obj}${act}`;
+      if (mode === 1) return `${org}·${obj}${act}`;
+      return `【${org}】${obj}${act}`;
+    }
+    return MASK_WORK_TITLES[seed % MASK_WORK_TITLES.length];
+  }
+
+  function convDisplayTitle(topic) {
+    return isMaskAvatar() ? disguiseTitleForTopic(topic) : String(topic.title || "");
+  }
+
+  function convDisplaySummary(topic, fallbackSummary) {
+    if (isMaskAvatar()) return String(topic.title || fallbackSummary || "");
+    return fallbackSummary;
+  }
 
   function ensureMaskAvatarToggle(panel) {
     if (!panel) return;
@@ -693,6 +739,9 @@
       position: relative;
     }
     .dingtalk-titlebar .t-btn:hover { background: rgba(0,0,0,.05); }
+    .dingtalk-titlebar .t-btn.dingtalk-dark-toggle.is-on {
+      color: var(--dd-accent); background: var(--dd-accent-soft);
+    }
     .dingtalk-titlebar .t-btn .dot {
       position: absolute; top: 4px; right: 4px; width: 6px; height: 6px;
       background: var(--dd-danger); border-radius: 50%;
@@ -1306,6 +1355,158 @@
       .${ROOT_CLASS}.${LOCK_CLASS} .dingtalk-chat-panel { left: var(--dd-nav); }
       .${ROOT_CLASS}.${LOCK_CLASS} #reply-control { left: calc(var(--dd-nav) + 12px) !important; right: 12px !important; }
     }
+
+    /* ---------- 深色模式 token + 硬编码覆盖 ---------- */
+    .${ROOT_CLASS}.${DARK_CLASS} {
+      color-scheme: dark !important;
+      --dd-blue: #3B92FF;
+      --dd-blue-hover: #5BA3FF;
+      --dd-blue-soft: #1A2F4D;
+      --dd-blue-chip: #1E3558;
+      --dd-title: #3B92FF;
+      --dd-accent: #3B92FF;
+      --dd-accent-soft: #1A2F4D;
+      --dd-nav2-bg: #1B1E24;
+      --dd-nav2-border: #2A2E36;
+      --dd-text: #E8EAED;
+      --dd-text-2: #B0B4BE;
+      --dd-text-3: #8A8F99;
+      --dd-text-4: #6B707A;
+      --dd-bg: #14161B;
+      --dd-chat-bg: #0F1115;
+      --dd-hover: #22262E;
+      --dd-active: #2A3140;
+      --dd-bubble-other: #1E222A;
+      --dd-bubble-me: #1A3358;
+      --dd-border: #2A2E36;
+      --dd-border-strong: #3A404C;
+      --dd-danger: #FF6B6B;
+      --dd-rail-bg: #171A22;
+      --dd-strip-bg: transparent;
+      --header_background: #14161B;
+      --header_primary: var(--dd-text);
+      --secondary: var(--dd-bg);
+      --primary: var(--dd-text);
+      --primary-medium: var(--dd-text-2);
+      --primary-low: var(--dd-text-3);
+      --d-hover: var(--dd-hover);
+    }
+    html.${ROOT_CLASS}.${DARK_CLASS},
+    html.${ROOT_CLASS}.${DARK_CLASS} body {
+      color-scheme: dark !important;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-titlebar {
+      background: linear-gradient(90deg, #1A2233 0%, #1E2738 100%);
+      color: var(--dd-text);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-titlebar .title-search {
+      background: #252B38;
+      color: var(--dd-text-3);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-titlebar .t-btn:hover {
+      background: rgba(255,255,255,.08);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-titlebar .t-btn.dingtalk-dark-toggle.is-on {
+      color: var(--dd-accent);
+      background: var(--dd-accent-soft);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-rail {
+      background: linear-gradient(180deg, #1A2233 0%, #1E2738 100%);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-rail-org-chip:hover {
+      background: rgba(255,255,255,.08);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-rail-item svg {
+      color: var(--dd-text-2);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-rail-item.active,
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-rail-more.is-on {
+      background: #252B38;
+      box-shadow: none;
+      color: var(--dd-accent);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-chip.active {
+      background: #252B38;
+      color: var(--dd-text);
+      box-shadow: none;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-list-header {
+      background: var(--dd-bg);
+      border-bottom-color: var(--dd-border);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-list-chips {
+      background: #1E222A;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-chip-icon {
+      background: #1E222A;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-chip-icon:hover {
+      background: #2A3140;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-list-body,
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-list-panel {
+      background: var(--dd-bg);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-chat-panel {
+      background: var(--dd-chat-bg);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-chat-header {
+      background: var(--dd-bg);
+      border-bottom-color: var(--dd-border);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-composer,
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-composer-card {
+      background: var(--dd-bg) !important;
+      border-color: var(--dd-border) !important;
+      border-top-color: var(--dd-border);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-composer-card:hover {
+      border-color: #3B5F8A !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-composer-box {
+      background: #1E222A !important;
+      border-color: var(--dd-border-strong);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-send-btn {
+      background: #4A5160;
+      color: #fff;
+    }
+    html.${ROOT_CLASS}.${DARK_CLASS} body .sidebar-wrapper {
+      background-color: var(--dd-nav2-bg) !important;
+      --primary: var(--dd-text);
+      --primary-medium: var(--dd-text-2);
+      --primary-low: var(--dd-text-3);
+      --primary-low-mid: #6B707A;
+      --primary-very-low: #22262E;
+      --primary-50: #1B1E24;
+      --primary-100: #22262E;
+      --primary-200: #2A2E36;
+      --primary-300: #3A404C;
+      --secondary: var(--dd-nav2-bg);
+      --tertiary: var(--dd-accent);
+      --quaternary: var(--dd-accent);
+      --d-hover: var(--dd-hover);
+      --d-sidebar-background: var(--dd-nav2-bg);
+      --d-sidebar-border-color: var(--dd-border);
+      color: var(--dd-text);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS}.dingtalk-notif-open .user-menu.dingtalk-user-menu-float,
+    .${ROOT_CLASS}.${DARK_CLASS}.dingtalk-notif-open .user-menu.revamped.menu-panel.dingtalk-user-menu-float,
+    .${ROOT_CLASS}.${DARK_CLASS}.dingtalk-notif-open .user-menu.menu-panel.dingtalk-user-menu-float {
+      background: var(--dd-bg) !important;
+      color: var(--dd-text) !important;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45) !important;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-topic-chip {
+      color: var(--dd-accent);
+      background: var(--dd-accent-soft);
+      border-color: #2F4F7A;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-rail-avatar.is-notif-pinned,
+    .${ROOT_CLASS}.${DARK_CLASS} .dingtalk-titlebar .dingtalk-rail-avatar.is-notif-pinned {
+      box-shadow: 0 0 0 2px var(--dd-bg), 0 0 0 4px var(--dd-accent);
+    }
   `;
 
   /* ============================== 基础设施 ============================== */
@@ -1417,51 +1618,85 @@
       document.documentElement.classList.contains("feishu-im-theme");
   }
 
-  /* ============================== 整站强制光明模式 ============================== */
+  /* ============================== 深色偏好 + 整站强制明暗 ============================== */
 
-  let lightSchemeObserver = null;
-  let forcingLight = false;
+  let schemeObserver = null;
+  let forcingScheme = false;
 
-  /** Discourse 用 link.light-scheme / link.dark-scheme 的 media 切换明暗 */
-  function forceSiteLightMode() {
-    if (otherThemeActive()) return;
-
-    forcingLight = true;
-    try {
-      document.documentElement.style.colorScheme = "light";
-      if (document.body) document.body.style.colorScheme = "light";
-
-      for (const link of document.querySelectorAll("link.dark-scheme, link[class*='dark-scheme']")) {
-        if (link.media !== "none") link.media = "none";
-        link.disabled = true;
-      }
-      for (const link of document.querySelectorAll("link.light-scheme, link[class*='light-scheme']")) {
-        link.disabled = false;
-        if (link.media !== "all") link.media = "all";
-      }
-
-      // 个别主题会在 html/body 挂暗色 class
-      document.documentElement.classList.remove("dark", "dark-scheme", "scheme-dark");
-      if (document.body) {
-        document.body.classList.remove("dark", "dark-scheme", "scheme-dark");
-      }
-    } finally {
-      forcingLight = false;
-    }
-
-    ensureLightSchemeObserver();
+  function isDarkPreferred() {
+    try { return localStorage.getItem(DARK_KEY) === "1"; } catch { return false; }
   }
 
-  function ensureLightSchemeObserver() {
-    if (lightSchemeObserver || typeof MutationObserver === "undefined") return;
-    lightSchemeObserver = new MutationObserver(() => {
-      if (forcingLight || otherThemeActive()) return;
-      forceSiteLightMode();
+  function setDarkPreferred(on) {
+    try { localStorage.setItem(DARK_KEY, on ? "1" : "0"); } catch { /* ignore */ }
+    applyColorMode();
+    forceSiteScheme();
+    syncDarkModeToggle();
+  }
+
+  function applyColorMode() {
+    const dark = isDarkPreferred();
+    document.documentElement.classList.toggle(DARK_CLASS, dark);
+  }
+
+  /** Discourse 用 link.light-scheme / link.dark-scheme 的 media 切换明暗 */
+  function forceSiteScheme() {
+    if (otherThemeActive()) return;
+
+    const dark = isDarkPreferred();
+    forcingScheme = true;
+    try {
+      const scheme = dark ? "dark" : "light";
+      document.documentElement.style.colorScheme = scheme;
+      if (document.body) document.body.style.colorScheme = scheme;
+
+      const darkLinks = document.querySelectorAll("link.dark-scheme, link[class*='dark-scheme']");
+      const lightLinks = document.querySelectorAll("link.light-scheme, link[class*='light-scheme']");
+
+      if (dark) {
+        for (const link of darkLinks) {
+          link.disabled = false;
+          if (link.media !== "all") link.media = "all";
+        }
+        for (const link of lightLinks) {
+          if (link.media !== "none") link.media = "none";
+          link.disabled = true;
+        }
+        document.documentElement.classList.add("dark", "dark-scheme", "scheme-dark");
+        if (document.body) {
+          document.body.classList.add("dark", "dark-scheme", "scheme-dark");
+        }
+      } else {
+        for (const link of darkLinks) {
+          if (link.media !== "none") link.media = "none";
+          link.disabled = true;
+        }
+        for (const link of lightLinks) {
+          link.disabled = false;
+          if (link.media !== "all") link.media = "all";
+        }
+        document.documentElement.classList.remove("dark", "dark-scheme", "scheme-dark");
+        if (document.body) {
+          document.body.classList.remove("dark", "dark-scheme", "scheme-dark");
+        }
+      }
+    } finally {
+      forcingScheme = false;
+    }
+
+    ensureSchemeObserver();
+  }
+
+  function ensureSchemeObserver() {
+    if (schemeObserver || typeof MutationObserver === "undefined") return;
+    schemeObserver = new MutationObserver(() => {
+      if (forcingScheme || otherThemeActive()) return;
+      forceSiteScheme();
     });
     const start = () => {
       const root = document.head || document.documentElement;
       if (!root) return;
-      lightSchemeObserver.observe(root, {
+      schemeObserver.observe(root, {
         childList: true,
         subtree: true,
         attributes: true,
@@ -1469,6 +1704,38 @@
       });
     };
     start();
+  }
+
+  function syncDarkModeToggle() {
+    const btn = document.querySelector(".dingtalk-dark-toggle");
+    if (!btn) return;
+    const on = isDarkPreferred();
+    btn.title = on ? "深色模式：开（点击切回浅色）" : "深色模式：关（点击开启）";
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.classList.toggle("is-on", on);
+    btn.innerHTML = on ? ICONS.sun : ICONS.moon;
+  }
+
+  function ensureDarkModeToggle(bar) {
+    if (!bar) return;
+    const actions = bar.querySelector(".title-actions");
+    if (!actions) return;
+    let btn = actions.querySelector(".dingtalk-dark-toggle");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "t-btn dingtalk-dark-toggle";
+      actions.insertBefore(btn, actions.firstChild);
+    }
+    if (btn.dataset.bound !== "1") {
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDarkPreferred(!isDarkPreferred());
+      });
+    }
+    syncDarkModeToggle();
   }
 
   /* ============================== 最左图标 rail ============================== */
@@ -1729,6 +1996,7 @@
     if (bar) {
       bindTitlebarSearch(bar);
       bindRailAvatarNotif(bar);
+      ensureDarkModeToggle(bar);
       return bar;
     }
     bar = document.createElement("header");
@@ -1745,12 +2013,14 @@
         </form>
       </div>
       <div class="title-actions">
+        <button type="button" class="t-btn dingtalk-dark-toggle" title="深色模式：关（点击开启）" aria-pressed="false">${ICONS.moon}</button>
         <button type="button" class="t-btn" title="投屏" aria-hidden="true"><span class="dot"></span>${ICONS.monitor}</button>
         <button type="button" class="t-btn" title="创建" aria-hidden="true">${ICONS.plus}</button>
       </div>`;
     document.body.appendChild(bar);
     bindTitlebarSearch(bar);
     bindRailAvatarNotif(bar);
+    ensureDarkModeToggle(bar);
     return bar;
   }
 
@@ -2573,17 +2843,20 @@
   function convRowHtml(topic, usersById) {
     const unread = topic.unread > 0 ? topic.unread : (topic.new_posts > 0 ? topic.new_posts : 0);
     const replyCount = Math.max(0, (topic.posts_count || 1) - 1);
-    const summary = topic.last_poster_username
+    const rawSummary = topic.last_poster_username
       ? `[${replyCount}条] ${topic.last_poster_username}`
       : `${topic.posts_count || 0} 回复`;
-    const tag = convCategoryTag(topic);
+    const title = convDisplayTitle(topic);
+    const summary = convDisplaySummary(topic, rawSummary);
+    // 匿名模式隐藏分类 chip，避免暴露真实板块
+    const tag = isMaskAvatar() ? "" : convCategoryTag(topic);
     return `
-      <a class="dingtalk-conv" href="${escapeHtml(topicHref(topic))}" data-topic-id="${topic.id}">
+      <a class="dingtalk-conv" href="${escapeHtml(topicHref(topic))}" data-topic-id="${topic.id}" title="${escapeHtml(title)}">
         ${convAvatarHtml(topic, usersById)}
         <span class="dingtalk-conv-info">
           <span class="dingtalk-conv-top">
             <span class="dingtalk-conv-title">
-              <span class="dingtalk-conv-name">${escapeHtml(topic.title)}</span>
+              <span class="dingtalk-conv-name">${escapeHtml(title)}</span>
               ${tag}
             </span>
             <span class="dingtalk-conv-time">${escapeHtml(formatTime(topic.bumped_at || topic.last_activity_at || topic.created_at))}</span>
@@ -3561,16 +3834,17 @@
   function applyTheme() {
     if (otherThemeActive()) {
       console.warn("[linuxdo-dingtalk] 检测到 IDEA / 飞书主题脚本已启用，钉钉主题自动避让。请只保留其中一个。");
-      document.documentElement.classList.remove(ROOT_CLASS, LOCK_CLASS, "dingtalk-topic-open");
+      document.documentElement.classList.remove(ROOT_CLASS, DARK_CLASS, LOCK_CLASS, "dingtalk-topic-open");
       removePanels();
       return;
     }
 
-    // 只要本脚本在跑（含切回原生布局），整站写死光明模式
-    forceSiteLightMode();
+    // 按脚本深色偏好强制站点明暗（含切回原生布局）
+    applyColorMode();
+    forceSiteScheme();
 
     if (getViewMode() === "native") {
-      document.documentElement.classList.remove(ROOT_CLASS, LOCK_CLASS, "dingtalk-topic-open");
+      document.documentElement.classList.remove(ROOT_CLASS, DARK_CLASS, LOCK_CLASS, "dingtalk-topic-open");
       removePanels();
       ensureModeFab();
       return;
@@ -3578,6 +3852,7 @@
 
     injectStyle();
     document.documentElement.classList.add(ROOT_CLASS);
+    applyColorMode();
     document.documentElement.classList.toggle("dingtalk-nav2-open", isNav2Open());
     restyleSplash();
     makeFavicon();
@@ -3646,11 +3921,13 @@
     }
     injectStyle();
     if (!otherThemeActive()) {
-      // document-start 尽早锁亮色，减少暗色闪一下
-      forceSiteLightMode();
+      // document-start 尽早按偏好锁明暗，减少闪一下
+      applyColorMode();
+      forceSiteScheme();
     }
     if (getViewMode() !== "native" && !otherThemeActive()) {
       document.documentElement.classList.add(ROOT_CLASS);
+      applyColorMode();
       restyleSplash();
       makeFavicon(); // document-start 尽早换标，减少未聚焦标签仍显示原 icon
     }

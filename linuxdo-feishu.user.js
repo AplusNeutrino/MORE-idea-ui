@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Linux DO · 飞书 IM 外观
 // @namespace    https://linux.do/
-// @version      0.1.0
+// @version      0.2.2
 // @description  飞书风格的 LinuxDo
 // @author       czm15053
 // @match        https://linux.do/*
@@ -18,8 +18,10 @@
   const STYLE_ID = "linuxdo-feishu-theme";
   const FAVICON_ID = "feishu-favicon";
   const ROOT_CLASS = "feishu-im-theme";
+  const DARK_CLASS = "feishu-dark";
   const LOCK_CLASS = "feishu-locked"; // 仅三栏路由挂载：隐藏原生主内容
   const VIEW_KEY = "linuxdo-feishu-view"; // "im" | "native"
+  const DARK_KEY = "linuxdo-feishu-dark"; // "1" = 深色
 
   const RAIL_WIDTH = 230; // 最左常驻栏（像素级复刻飞书文字导航，纯装饰）
   const NAV2_WIDTH = 240; // 展开栏（原生侧栏原样搬入，默认收起）
@@ -53,7 +55,9 @@
     contacts: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>`,
     project: `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>`,
     more: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><path d="M17 14v6M14 17h6"/></svg>`,
-    disguise: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>`
+    disguise: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>`,
+    moon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 1 0 9.5 9.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`,
+    sun: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`
   };
 
   const FAVICON_URI = "data:image/x-icon;base64,AAABAAEAMDAAAAEAIACoJQAAFgAAACgAAAAwAAAAYAAAAAEAIAAAAAAAACQAABMLAAATCwAAAAAAAAAAAAD///8A////AP///wf///8U////W////4f///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+G////T////yL///8J////AP///wD///8B////D////2n////R////9P////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////9f///+D///92////EP///wH///8N////hv////L////9//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7////z////hv///wr///9T////8f//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P///zj///+s////+v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+v///6v////x/////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////H///////////////////////////////////////////////////////////////////////////////////////39///7+f//+vj///v5///9/P///f3////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9/P//9/P//+/p///s5P//59z//9jI///KtP//ybP//8q0///Xx///2cn//+je///s5P//8uz///f0///+/v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9vL//+vj///VxP//uJr//5Vp//+FUv//cjX//3Az//9wM///cDP//3Az//9wM///cDT//3g+//+GU///onv//7mc///dz///7OP///n3//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Ls///k2f//t5j//4xc//9xNf//bzL//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDL//3Az//93Pf//jV3//8Sr///n3P//9/P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////08P//4dX//6eD//9+SP//cDP//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDL//3Az//+FUf//u57//+bc///6+P///////////////////////////////////////////////////////////////////////////////////////////////////v7//+7n//+zk///fkj//3Ay//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wMv//cDP//4ta///Hr///8Or/////////////////////////////////////////////////////////////////////////////////////////////+/n//7KR//9yNv//cDL//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9xNf//qof//+bc///9/f//////////////////////////////////////////////////////////////////////////////////+PX//41c//9xNf//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//5Zq///Xxv///fz/////////////////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xM///cTT//3E0//9xNP//cTT//3Ez//+FT///1MH///z7////////////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xM///cDP/92ww/+xmLf/lYyv/32Ap/99gKf/hYSr/6GQs//FpL//+g07//9XD///+/v//////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9xNP//cTP/9Gov/+hkLP/YXCf/x1Mh/7JIGv+kQRb/mDsS/5c7Ev+cPRT/qEQY/7tNHf/aXSj/74BS///l2f//////////////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9vMv//cTP//G4y/+plLP/eXyn/wlAg/6xFGf+YOxL/mDsS/5k7E/+ZPBP/mjwT/5o8E/+aPBP/mTwT/5k7E/+dPRT/uk4f/+GOa//96eD///7+////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///bzH//20v//t0Ov/hXib/z1Yj/7BHGv+fPhX/mDsS/5k7E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mTsS/6VDGP/am3///vXy////////////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9uMP//fET//5pv//i0lf/FfFz/nkch/5g6EP+ZPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8FP+mTyn/6cq+//79/f//////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//3Az//9wMv//bjD//3U6//+VZ///wqj//+3l//7////x5eD/0KSR/6xfPf+ZOhH/mjsS/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+bPhb/t3ZZ//fx7v//////////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///cDP//28y//9yNv//j17//7qd///k2P///////////////////////////+DFt/+4d1v/nEAY/5o7E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/nEAY/9u5qv/9/Pv/////////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//3Az//9wM///bzH//39I//+ujP//28z////////////////////////////////////////////v4Nr/w4xw/51FGP+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mz4V/7BmRv/37+v////+////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///cDP//28y//9uMP//kmP//8my///39P////////////////////////////////////////////////////7/5OOn/6yJE/+cRRL/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5xBGf/Ztqb//fz7////////////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9wM///bzL//3g///+vjf//3tD//////////////////////////////////////////////////////////v/5/Ov/zeNL/7jOBf+qign/nEUS/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5s+Ff+uY0L/9u7q/////v//////////////////////////////////+PX//4hV//9xNP//cDP//3Az//9vMf//gkz//7uf///49f////////////////////////////////////////////////////////////7+/P/f7Iv/vNgL/7nWAP+3zgH/qowJ/5xGEv+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+cQBj/17Kh//38+///////////////////////////////////+PX//4hV//9xNP//cDP//3Ay//+SY///z7v///j2/////////////////////////////////////////////////////////////v/9/+31v//B2yD/udYB/7nWAP+51gD/t84B/6uPCf+cRhL/mjsT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+bPhX/rWA///bv6/////7/////////////////////////////+PX//4hV//9xNP//cDP//5lt///dzv////////////////////////////////////////////////////////////////////7/+fzp/83iSf+61gL/udYA/7nWAP+51gD/udYA/7fOAf+rkQj/nUsR/5o6E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mz8W/8eUff/9/Pv/////////////////////////////+PX//4hV//9xNP//mm///+LV///////////////////////////////////////////////////////////////////////+//z/3OuB/7vXCf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+4zwH/rp4H/6NoDf+bPxL/mjoT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/5o8E/+aPBP/mjwT/6BHIf/fwbT//vz8////////////////////////+PX//4hV//+dc///49f//////////////////////////////////////////////////////////////////////////f/n8af/wNob/7nWAf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udQA/7S7BP+vmhH/o2kN/5o/D/+YNw3/mDgO/5k5D/+ZOhD/mToQ/5k5D/+YOA7/mDgO/6BHIf/CinH/+PHu/////v//////////////////+/r//8Cm///m3P///////////////////////////////////////////////////////////////////////v/9/+31wP/F3Sv/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nYAP+61gb/tb0H/8GtS//JmH7/vYBl/7VvUf+wZ0j/sGdI/7VvUf+9gGX/ypmE/9/BtP/p1Mv//Pj3/////////////////////////v7///bz//////////////////////////////////////////////////////////////////////////7/9vnd/8vhRP+51gH/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/vNkI/+XyoP/38uv/8uXg/+3c1f/q2ND/6tjQ/+3c1f/y5eD/+fLw///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////4++f/0uRb/7vXBv+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/vtkU//f64f////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////j75v/S5V3/u9gK/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+61wX/0+Vg//3+9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+Pvl/9HkWf+71wn/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+82An/8PbJ//7//f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v/3++T/0ORW/7vXCf+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7rXBP/Q41b//P3z//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f74//P41L/u9cI/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYB/77aFf/w98r//v/9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+//3/7fW//8vgQv+71wf/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/u9cG/9jpdP/9/vb///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7++//j75n/xNwn/7rWAv+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+61gP/yN85//f64f////7///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7/+vzr/9jocv/A2hn/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAP+51gD/udYA/7nWAf/D2yL/8PfI/////f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////f75/+z0uv/l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+Xvn//l75//5e+f/+bwov/1+dn//v/8//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3++f/9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//9/vf//f73//3+9//////////////////////////////////////////////////////////////////////////////////////////////////////x/////v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////v////H///+s////+v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+v///6z///85////8P//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8f///1L///8K////hf////P////+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3////y////hf///w3///8B////EP///3b////g////9f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////+f////n////5////9f///9L///9o////D////wH///8A////AP///wn///8i////T////4b///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+J////if///4n///+H////W////xT///8H////AP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
@@ -154,10 +158,12 @@
     const seed = (tid * 2654435761) >>> 0;
     const mode = seed % 4;
     if (mode <= 1) {
-      const text = avatarTextFromTitle(topic.title);
+      // 匿名模式头像字也走伪装工作标题，避免从真帖标题泄露
+      const cover = disguiseTitleForTopic(topic);
+      const text = avatarTextFromTitle(cover);
       const chars = [...text];
       const len = chars.length;
-      const color = avatarColor(topic.title || String(tid));
+      const color = avatarColor(cover || String(tid));
       const hollow = ((seed >>> 3) % 2) === 1;
       // 四字排成两行，每行 2 个；其它字数原样
       const label = len === 4
@@ -186,6 +192,48 @@
       className: "",
       styleExtra: "border:none;"
     };
+  }
+
+
+  /** 匿名模式下伪装成工作会话标题（按 topic.id 稳定取值） */
+  const MASK_WORK_ORGS = ["产品", "研发", "设计", "运营", "市场", "销售", "财务", "人力", "法务", "客服", "数据", "增长"];
+  const MASK_WORK_OBJS = ["需求", "方案", "进度", "指标", "预算", "版本", "活动", "合同", "报表", "问题", "排期", "复盘"];
+  const MASK_WORK_ACTS = ["同步群", "评审会", "对齐会", "周会", "跟进群", "值班群", "项目组", "讨论组", "协作群", "拉通会"];
+  const MASK_WORK_TITLES = [
+    "产品需求评审", "本周工作同步", "技术方案讨论", "项目进度对齐", "线上问题排查",
+    "发版 Checklist", "设计稿确认", "客户反馈跟进", "OKR 季度对齐", "数据报表复核",
+    "运营活动排期", "合同条款评审", "预算审批沟通", "招聘面试安排", "安全合规检查",
+    "接口联调纪要", "周会待办汇总", "版本回归测试", "供应商比价", "权限申请流程",
+    "内容选题讨论", "监控告警复盘", "培训材料更新", "绩效面谈准备", "跨组协作排期",
+    "需求优先级排序", "灰度发布观察", "客服工单升级", "品牌物料确认", "财报数据核对",
+    "会议室预约冲突", "出差行程确认", "法务意见回复", "新员工 onboarding", "依赖升级评估",
+    "压测结果同步", "埋点方案评审", "SLA 达标复盘", "渠道投放优化", "库存预警处理"
+  ];
+
+  function disguiseTitleForTopic(topic) {
+    const tid = Math.abs(Number(topic && topic.id) || 0);
+    // 打散相邻 id，避免列表里标题连片重复
+    const seed = (tid * 2654435761) >>> 0;
+    // 约一半用组合群名（更像飞书会话），一半用固定工作标题
+    if ((seed % 2) === 0) {
+      const org = MASK_WORK_ORGS[seed % MASK_WORK_ORGS.length];
+      const obj = MASK_WORK_OBJS[(seed >>> 3) % MASK_WORK_OBJS.length];
+      const act = MASK_WORK_ACTS[(seed >>> 7) % MASK_WORK_ACTS.length];
+      const mode = (seed >>> 11) % 3;
+      if (mode === 0) return `${org}${obj}${act}`;
+      if (mode === 1) return `${org}·${obj}${act}`;
+      return `【${org}】${obj}${act}`;
+    }
+    return MASK_WORK_TITLES[seed % MASK_WORK_TITLES.length];
+  }
+
+  function convDisplayTitle(topic) {
+    return isMaskAvatar() ? disguiseTitleForTopic(topic) : String(topic.title || "");
+  }
+
+  function convDisplaySummary(topic, fallbackSummary) {
+    if (isMaskAvatar()) return String(topic.title || fallbackSummary || "");
+    return fallbackSummary;
   }
 
   function ensureMaskAvatarToggle(panel) {
@@ -711,8 +759,22 @@
     .feishu-rail-search input::-webkit-search-decoration,
     .feishu-rail-search input::-webkit-search-cancel-button,
     .feishu-rail-search input::-webkit-search-results-button { display: none; }
-    .feishu-rail-items { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+    .feishu-rail-items { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; min-height: 0; }
     .feishu-rail-items::-webkit-scrollbar { display: none; }
+    .feishu-rail-bottom {
+      margin-top: auto; flex-shrink: 0; padding-top: 8px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .feishu-dark-toggle {
+      cursor: pointer !important;
+      width: 100%; border: none; background: transparent;
+      font: inherit; text-align: left;
+    }
+    .feishu-dark-toggle:hover { background: rgba(255,255,255,0.55); }
+    .feishu-dark-toggle.is-on {
+      color: var(--fs-accent); background: var(--fs-accent-soft); font-weight: 600;
+    }
+    .feishu-dark-toggle.is-on svg { color: var(--fs-accent); }
     .feishu-rail-item {
       display: flex; align-items: center; gap: 12px;
       height: 44px; padding: 0 12px;
@@ -1200,6 +1262,106 @@
       .${ROOT_CLASS}.${LOCK_CLASS} .feishu-chat-panel { left: var(--fs-nav); }
       .${ROOT_CLASS}.${LOCK_CLASS} #reply-control { left: calc(var(--fs-nav) + 12px) !important; right: 12px !important; }
     }
+
+    /* ---------- 深色模式 token + 硬编码覆盖 ---------- */
+    .${ROOT_CLASS}.${DARK_CLASS} {
+      color-scheme: dark !important;
+      --fs-accent: #4C82FF;
+      --fs-accent-soft: #1A2A4D;
+      --fs-nav2-bg: #1B1F26;
+      --fs-nav2-border: #2A3038;
+      --fs-text: #E5E6EB;
+      --fs-text-2: #A0A6B0;
+      --fs-text-3: #7B828C;
+      --fs-bg: #171A1F;
+      --fs-chat-bg: #12151A;
+      --fs-hover: #22272E;
+      --fs-active: #243148;
+      --fs-bubble-other: #2A2F36;
+      --fs-bubble-me: #1A2F55;
+      --fs-border: #2A3038;
+      --fs-border-strong: #3A424C;
+      --fs-danger: #F54840;
+      --fs-rail-bg: #1B2230;
+      --fs-strip-bg: #171A1F;
+      --header_background: #171A1F;
+      --header_primary: var(--fs-text);
+      --secondary: var(--fs-bg);
+      --primary: var(--fs-text);
+      --primary-medium: var(--fs-text-2);
+      --primary-low: var(--fs-text-3);
+      --d-hover: var(--fs-hover);
+    }
+    html.${ROOT_CLASS}.${DARK_CLASS},
+    html.${ROOT_CLASS}.${DARK_CLASS} body {
+      color-scheme: dark !important;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-rail-toggle:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS}.feishu-nav2-open .feishu-rail-toggle {
+      background: #2A3140;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-dark-toggle:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-rail-item.active {
+      background: #2A3140;
+      box-shadow: none;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-list-panel,
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-list-header,
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-list-body {
+      background: var(--fs-bg);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-chat-panel,
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-chat-header {
+      background: var(--fs-chat-bg);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-chat-header {
+      border-bottom-color: var(--fs-border);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-list-header {
+      border-bottom-color: var(--fs-border);
+    }
+    html.${ROOT_CLASS}.${DARK_CLASS} body .sidebar-wrapper {
+      background-color: var(--fs-nav2-bg) !important;
+      --primary: var(--fs-text);
+      --primary-medium: var(--fs-text-2);
+      --primary-low: var(--fs-text-3);
+      --primary-low-mid: #6B7280;
+      --primary-very-low: #22272E;
+      --primary-50: #1B1F26;
+      --primary-100: #22272E;
+      --primary-200: #2A3038;
+      --primary-300: #3A424C;
+      --secondary: var(--fs-nav2-bg);
+      --tertiary: var(--fs-accent);
+      --quaternary: var(--fs-accent);
+      --d-hover: var(--fs-hover);
+      --d-sidebar-background: var(--fs-nav2-bg);
+      --d-sidebar-border-color: var(--fs-border);
+      color: var(--fs-text);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS}.feishu-notif-open .user-menu.feishu-user-menu-float,
+    .${ROOT_CLASS}.${DARK_CLASS}.feishu-notif-open .user-menu.revamped.menu-panel.feishu-user-menu-float,
+    .${ROOT_CLASS}.${DARK_CLASS}.feishu-notif-open .user-menu.menu-panel.feishu-user-menu-float {
+      background: var(--fs-bg) !important;
+      color: var(--fs-text) !important;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45) !important;
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-rail-avatar.is-notif-pinned {
+      box-shadow: 0 0 0 2px var(--fs-rail-bg), 0 0 0 4px var(--fs-accent);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-chat-compose.error {
+      border-color: #7A3A3A;
+      background: #2A1A1A;
+      color: var(--fs-danger);
+    }
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-chat-compose:hover,
+    .${ROOT_CLASS}.${DARK_CLASS} .feishu-chat-compose.busy {
+      border-color: #3B5F8A;
+    }
   `;
 
   /* ============================== 基础设施 ============================== */
@@ -1309,51 +1471,85 @@
       document.documentElement.classList.contains("idea-ide-theme");
   }
 
-  /* ============================== 整站强制光明模式 ============================== */
+  /* ============================== 深色偏好 + 整站强制明暗 ============================== */
 
-  let lightSchemeObserver = null;
-  let forcingLight = false;
+  let schemeObserver = null;
+  let forcingScheme = false;
 
-  /** Discourse 用 link.light-scheme / link.dark-scheme 的 media 切换明暗 */
-  function forceSiteLightMode() {
-    if (ideaThemeActive()) return;
-
-    forcingLight = true;
-    try {
-      document.documentElement.style.colorScheme = "light";
-      if (document.body) document.body.style.colorScheme = "light";
-
-      for (const link of document.querySelectorAll("link.dark-scheme, link[class*='dark-scheme']")) {
-        if (link.media !== "none") link.media = "none";
-        link.disabled = true;
-      }
-      for (const link of document.querySelectorAll("link.light-scheme, link[class*='light-scheme']")) {
-        link.disabled = false;
-        if (link.media !== "all") link.media = "all";
-      }
-
-      // 个别主题会在 html/body 挂暗色 class
-      document.documentElement.classList.remove("dark", "dark-scheme", "scheme-dark");
-      if (document.body) {
-        document.body.classList.remove("dark", "dark-scheme", "scheme-dark");
-      }
-    } finally {
-      forcingLight = false;
-    }
-
-    ensureLightSchemeObserver();
+  function isDarkPreferred() {
+    try { return localStorage.getItem(DARK_KEY) === "1"; } catch { return false; }
   }
 
-  function ensureLightSchemeObserver() {
-    if (lightSchemeObserver || typeof MutationObserver === "undefined") return;
-    lightSchemeObserver = new MutationObserver(() => {
-      if (forcingLight || ideaThemeActive()) return;
-      forceSiteLightMode();
+  function setDarkPreferred(on) {
+    try { localStorage.setItem(DARK_KEY, on ? "1" : "0"); } catch { /* ignore */ }
+    applyColorMode();
+    forceSiteScheme();
+    syncDarkModeToggle();
+  }
+
+  function applyColorMode() {
+    const dark = isDarkPreferred();
+    document.documentElement.classList.toggle(DARK_CLASS, dark);
+  }
+
+  /** Discourse 用 link.light-scheme / link.dark-scheme 的 media 切换明暗 */
+  function forceSiteScheme() {
+    if (ideaThemeActive()) return;
+
+    const dark = isDarkPreferred();
+    forcingScheme = true;
+    try {
+      const scheme = dark ? "dark" : "light";
+      document.documentElement.style.colorScheme = scheme;
+      if (document.body) document.body.style.colorScheme = scheme;
+
+      const darkLinks = document.querySelectorAll("link.dark-scheme, link[class*='dark-scheme']");
+      const lightLinks = document.querySelectorAll("link.light-scheme, link[class*='light-scheme']");
+
+      if (dark) {
+        for (const link of darkLinks) {
+          link.disabled = false;
+          if (link.media !== "all") link.media = "all";
+        }
+        for (const link of lightLinks) {
+          if (link.media !== "none") link.media = "none";
+          link.disabled = true;
+        }
+        document.documentElement.classList.add("dark", "dark-scheme", "scheme-dark");
+        if (document.body) {
+          document.body.classList.add("dark", "dark-scheme", "scheme-dark");
+        }
+      } else {
+        for (const link of darkLinks) {
+          if (link.media !== "none") link.media = "none";
+          link.disabled = true;
+        }
+        for (const link of lightLinks) {
+          link.disabled = false;
+          if (link.media !== "all") link.media = "all";
+        }
+        document.documentElement.classList.remove("dark", "dark-scheme", "scheme-dark");
+        if (document.body) {
+          document.body.classList.remove("dark", "dark-scheme", "scheme-dark");
+        }
+      }
+    } finally {
+      forcingScheme = false;
+    }
+
+    ensureSchemeObserver();
+  }
+
+  function ensureSchemeObserver() {
+    if (schemeObserver || typeof MutationObserver === "undefined") return;
+    schemeObserver = new MutationObserver(() => {
+      if (forcingScheme || ideaThemeActive()) return;
+      forceSiteScheme();
     });
     const start = () => {
       const root = document.head || document.documentElement;
       if (!root) return;
-      lightSchemeObserver.observe(root, {
+      schemeObserver.observe(root, {
         childList: true,
         subtree: true,
         attributes: true,
@@ -1361,6 +1557,44 @@
       });
     };
     start();
+  }
+
+  function syncDarkModeToggle() {
+    const btn = document.querySelector(".feishu-dark-toggle");
+    if (!btn) return;
+    const on = isDarkPreferred();
+    btn.title = on ? "深色模式：开（点击切回浅色）" : "深色模式：关（点击开启）";
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.classList.toggle("is-on", on);
+    const icon = on ? ICONS.sun : ICONS.moon;
+    const label = on ? "浅色" : "深色";
+    btn.innerHTML = `${icon}<span>${label}</span>`;
+  }
+
+  function ensureDarkModeToggle(rail) {
+    if (!rail) return;
+    let bottom = rail.querySelector(".feishu-rail-bottom");
+    if (!bottom) {
+      bottom = document.createElement("div");
+      bottom.className = "feishu-rail-bottom";
+      rail.appendChild(bottom);
+    }
+    let btn = bottom.querySelector(".feishu-dark-toggle");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "feishu-rail-item feishu-dark-toggle";
+      bottom.appendChild(btn);
+    }
+    if (btn.dataset.bound !== "1") {
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDarkPreferred(!isDarkPreferred());
+      });
+    }
+    syncDarkModeToggle();
   }
 
   /* ============================== 最左图标 rail ============================== */
@@ -1435,6 +1669,7 @@
     if (rail) {
       bindRailSearch(rail);
       bindRailAvatarNotif(rail);
+      ensureDarkModeToggle(rail);
       syncRail();
       return rail;
     }
@@ -1483,6 +1718,7 @@
     document.body.appendChild(rail);
     bindRailSearch(rail);
     bindRailAvatarNotif(rail);
+    ensureDarkModeToggle(rail);
     syncRail();
     return rail;
   }
@@ -2253,15 +2489,17 @@
     }
     const unread = topic.unread > 0 ? topic.unread : (topic.new_posts > 0 ? topic.new_posts : 0);
     const replyCount = Math.max(0, (topic.posts_count || 1) - 1);
-    const summary = topic.last_poster_username
+    const rawSummary = topic.last_poster_username
       ? `[${replyCount}条] ${topic.last_poster_username}`
       : `${topic.posts_count || 0} 回复`;
+    const title = convDisplayTitle(topic);
+    const summary = convDisplaySummary(topic, rawSummary);
     return `
-      <a class="feishu-conv" href="${escapeHtml(topicHref(topic))}" data-topic-id="${topic.id}">
+      <a class="feishu-conv" href="${escapeHtml(topicHref(topic))}" data-topic-id="${topic.id}" title="${escapeHtml(title)}">
         <span class="feishu-conv-avatar${avatarClass}" style="background:${avatarBg};${avatarStyleExtra}">${avatarHtml}</span>
         <span class="feishu-conv-info">
           <span class="feishu-conv-top">
-            <span class="feishu-conv-name">${escapeHtml(topic.title)}</span>
+            <span class="feishu-conv-name">${escapeHtml(title)}</span>
             <span class="feishu-conv-time">${escapeHtml(formatTime(topic.last_activity_at))}</span>
           </span>
           <span class="feishu-conv-bottom">
@@ -2298,10 +2536,11 @@
         const icon = PIN_AVATARS[Math.abs(Number(t.id) || 0) % PIN_AVATARS.length];
         inner = `<img src="${icon}" alt="" loading="lazy">`;
       }
+      const pinTitle = mask ? disguiseTitleForTopic(t) : String(t.title || "");
       return `
-        <a class="feishu-pin" href="${escapeHtml(topicHref(t))}" title="${escapeHtml(t.title)}">
+        <a class="feishu-pin" href="${escapeHtml(topicHref(t))}" title="${escapeHtml(pinTitle)}">
           <span class="feishu-pin-avatar${cls}" style="background:${bg};${styleExtra}">${inner}</span>
-          <span class="feishu-pin-name">${escapeHtml(t.title.slice(0, 6))}</span>
+          <span class="feishu-pin-name">${escapeHtml(pinTitle.slice(0, 6))}</span>
         </a>`;
     }).join("");
   }
@@ -3156,16 +3395,17 @@
   function applyTheme() {
     if (ideaThemeActive()) {
       console.warn("[linuxdo-feishu] 检测到 IDEA 主题脚本已启用，本脚本自动避让。请只保留其中一个。");
-      document.documentElement.classList.remove(ROOT_CLASS, LOCK_CLASS, "feishu-topic-open");
+      document.documentElement.classList.remove(ROOT_CLASS, DARK_CLASS, LOCK_CLASS, "feishu-topic-open");
       removePanels();
       return;
     }
 
-    // 只要本脚本在跑（含切回原生布局），整站写死光明模式
-    forceSiteLightMode();
+    // 按脚本深色偏好强制站点明暗（含切回原生布局）
+    applyColorMode();
+    forceSiteScheme();
 
     if (getViewMode() === "native") {
-      document.documentElement.classList.remove(ROOT_CLASS, LOCK_CLASS, "feishu-topic-open");
+      document.documentElement.classList.remove(ROOT_CLASS, DARK_CLASS, LOCK_CLASS, "feishu-topic-open");
       removePanels();
       ensureModeFab();
       return;
@@ -3173,6 +3413,7 @@
 
     injectStyle();
     document.documentElement.classList.add(ROOT_CLASS);
+    applyColorMode();
     document.documentElement.classList.toggle("feishu-nav2-open", isNav2Open());
     restyleSplash();
     makeFavicon();
@@ -3236,11 +3477,13 @@
     }
     injectStyle();
     if (!ideaThemeActive()) {
-      // document-start 尽早锁亮色，减少暗色闪一下
-      forceSiteLightMode();
+      // document-start 尽早按偏好锁明暗，减少闪一下
+      applyColorMode();
+      forceSiteScheme();
     }
     if (getViewMode() !== "native" && !ideaThemeActive()) {
       document.documentElement.classList.add(ROOT_CLASS);
+      applyColorMode();
       restyleSplash();
       makeFavicon(); // document-start 尽早换标，减少未聚焦标签仍显示原 icon
     }
