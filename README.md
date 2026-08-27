@@ -1,8 +1,8 @@
-# Linux DO · JetBrains / 飞书 风格外观
+# Linux DO · JetBrains / 飞书 / 钉钉 风格外观
 
-把 [linux.do](https://linux.do/) 换成 **JetBrains IDE** 或**飞书 IM** 风格。只换皮，不碰数据——内容、链接、按钮与交互全部保留。
+把 [linux.do](https://linux.do/) 换成 **JetBrains IDE**、**飞书 IM** 或**钉钉 PC IM** 风格。只换皮，不碰数据——内容、链接、按钮与交互全部保留。
 
-> ⚠️ 两个脚本**互斥**，同一时刻只启用一个。同时启用时飞书脚本会自动避让（控制台有提示）。
+> ⚠️ 三个脚本**互斥**，同一时刻只启用一个。同时启用时后装脚本会自动避让（控制台有提示）。
 
 ## 脚本一：JetBrains / Darcula 外观（`linuxdo-idea.user.js`）
 
@@ -79,11 +79,46 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-feishu.user.js
 | hover 头像通知 | ![hover 头像通知](./snapshot/hover%20头像通知.png) |
 | 一键切换隐私头像 | ![一键切换隐私头像](./snapshot/一键切换隐私头像.png) |
 
+## 脚本三：钉钉 IM 外观（`linuxdo-dingtalk.user.js`）
+
+换成**新版钉钉 PC 即时消息**风格：蓝紫渐变顶栏 + 110px 图标文字导航 + 会话列表 + 聊天区。
+
+### 安装
+
+同上，安装 [`linuxdo-dingtalk.user.js`](./linuxdo-dingtalk.user.js) 即可。
+
+Raw 直链（仓库公开后可用）：
+
+```text
+https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-dingtalk.user.js
+```
+
+### 功能
+
+- **浅色 titlebar**：左侧用户头像（hover / 点击打开通知菜单，带未读角标）、居中搜索条（同步原生搜索）、右侧 AI / 投屏 / 创建装饰按钮
+- **左 rail**：浅色图标 + 文字横向导航（消息 / 文档 / AI表格 / AI听记 / 工作台 / 通讯录 / 会议 / 日历 / 待办 / 添加），顶部组织 chip；底部「更多」展开 / 收起原生侧栏，宽度可拖拽
+- **中栏**：会话列表（消息 / 未读 chips 带计数 + 筛选）；圆角矩形头像；支持一键切换为单字 / 九宫格伪装头像
+- **右栏**：聊天头带参与人数与所属分类 chip；话题聊天气泡 + 底部卡片式 composer（点击打开原生编辑器）
+- **原生视图切换**：聊天区可切回原版界面，选择会记住
+- **仅浅色模式**：与钉钉一致，无暗夜模式
+- **互斥**：检测到 IDEA 或飞书主题时自动避让
+
+### 截图
+
+| | |
+| --- | --- |
+| 帖子详情 | ![帖子详情](./snapshot/帖子详情-ding.png) |
+| 个人视角 | ![个人视角](./snapshot/个人视角-ding.png) |
+| 点击展开分类列表 | ![点击展开分类列表](./snapshot/点击展开分类列表-ding.png) |
+| 点击下拉筛选 | ![点击下拉筛选](./snapshot/点击下拉筛选-ding.png) |
+| hover 头像通知 | ![hover 头像通知](./snapshot/hover%20头像通知-ding.png) |
+| 一键切换隐私头像 | ![一键切换隐私头像](./snapshot/一键切换隐私头像-ding.png) |
+
 ## License
 
 MIT © czm15053
 
-JetBrains、IntelliJ IDEA、PyCharm 均为 JetBrains s.r.o. 商标；飞书为字节跳动旗下产品商标。本项目为非官方、非关联作品。
+JetBrains、IntelliJ IDEA、PyCharm 均为 JetBrains s.r.o. 商标；飞书为字节跳动旗下产品商标；钉钉为阿里巴巴集团产品商标。本项目为非官方、非关联作品。
 
 ## 友链
 
