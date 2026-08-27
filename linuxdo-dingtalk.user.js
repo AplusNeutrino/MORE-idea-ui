@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Linux DO · 钉钉 IM 外观
 // @namespace    https://linux.do/
-// @version      0.4.2
+// @version      0.4.3
 // @description  钉钉风格的 LinuxDo
 // @author       czm15053
 // @match        https://linux.do/*
@@ -2719,6 +2719,14 @@
     try {
       if (/^https?:/i.test(url)) path = new URL(url, location.origin).pathname + new URL(url, location.origin).search + new URL(url, location.origin).hash;
     } catch { /* keep url */ }
+    // IM 观感：进入话题固定从第 1 楼打开（原生隐藏流窗口随之对齐）
+    {
+      const cut = /[?#]/.exec(path);
+      const base = cut ? path.slice(0, cut.index) : path;
+      if (/^\/t\/[^/]+\/\d+$/.test(base)) {
+        path = `${base}/1${cut ? path.slice(cut.index) : ""}`;
+      }
+    }
     if (discourseRouteTo(path)) {
       scheduleApply();
       return;
@@ -3599,7 +3607,26 @@
     try {
       const data = await api(`/t/${topicId}.json`);
       if (chatState.topicId !== topicId) return; // 路由已切走
-      const posts = (data.post_stream && data.post_stream.posts) || [];
+      let posts = (data.post_stream && data.post_stream.posts) || [];
+      // 登录态下 Discourse 的窗口可能锚定在「上次阅读处」；按 IM 观感固定从第 1 楼开始展示
+      if (
+        posts.length &&
+        Number(posts[0].post_number) !== 1 &&
+        Array.isArray(data.post_stream?.stream)
+      ) {
+        const headIds = data.post_stream.stream.slice(0, 20);
+        if (headIds.length) {
+          try {
+            const qs = headIds.map((id) => `post_ids[]=${id}`).join("&");
+            const headData = await api(`/t/${topicId}/posts.json?${qs}`);
+            const headPosts = sortPostsByStream(
+              (headData.post_stream && headData.post_stream.posts) || headData.posts || [],
+              headIds
+            );
+            if (headPosts.length) posts = headPosts;
+          } catch { /* 取不到头部时保留原窗口 */ }
+        }
+      }
       chatState.stream = (data.post_stream && data.post_stream.stream) || posts.map((p) => p.id);
       chatState.renderedFirstIdx = chatState.stream.indexOf(posts.length ? posts[0].id : -1);
       if (chatState.renderedFirstIdx < 0) chatState.renderedFirstIdx = 0;
@@ -3671,7 +3698,7 @@
       if (body) {
         body.innerHTML = renderBubbles(posts, getCurrentUsername()) ||
           `<div class="dingtalk-chat-empty">${ICONS.msg}<div>暂无消息</div></div>`;
-        body.scrollTop = body.scrollHeight;
+        body.scrollTop = 0; // 从第一条消息看起
       }
       syncListActive();
     } catch (err) {
