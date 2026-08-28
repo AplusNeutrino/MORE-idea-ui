@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Linux DO · 钉钉 IM 外观
 // @namespace    https://linux.do/
-// @version      0.4.3
+// @version      0.5.0
 // @description  钉钉风格的 LinuxDo
 // @author       czm15053
 // @match        https://linux.do/*
@@ -22,6 +22,8 @@
   const LOCK_CLASS = "dingtalk-locked"; // 仅三栏路由挂载：隐藏原生主内容
   const VIEW_KEY = "linuxdo-dingtalk-view"; // "im" | "native"
   const DARK_KEY = "linuxdo-dingtalk-dark"; // "1" = 深色
+  const LAST_READ_KEY = "linuxdo-dingtalk-last-read";
+  const LAST_READ_MAX_TOPICS = 200;
 
   const RAIL_WIDTH = 110; // 最左图标+文字横向导航（可拖拽调宽）
   const NAV2_WIDTH = 240; // 展开栏（原生侧栏原样搬入，默认收起）
@@ -1248,11 +1250,22 @@
     .dingtalk-composer-tools .dingtalk-icon-btn { width: 28px; height: 28px; }
     .dingtalk-composer-tools .spacer { flex: 1; }
     .dingtalk-composer-tools .hint { font-size: 11px; color: var(--dd-text-4); margin-right: 8px; }
+    .dingtalk-composer-tools .dingtalk-composer-status {
+      font-size: 11px; color: var(--dd-text-4);
+      max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-right: 8px;
+    }
+    .dingtalk-composer-tools .dingtalk-composer-status.error { color: var(--dd-danger); }
+    .dingtalk-composer-tools .dingtalk-composer-status.busy { color: var(--dd-accent); }
+    .dingtalk-composer-tools .dingtalk-composer-status.success { color: #00C56C; }
     .dingtalk-send-btn {
       height: 26px; padding: 0 14px; border: 0; border-radius: 5px;
       background: #C5C9D0; color: #fff; font-size: 12px; cursor: pointer;
       font-family: var(--dd-font);
+      transition: background 0.15s;
     }
+    .dingtalk-send-btn:not(:disabled) { background: var(--dd-accent); }
+    .dingtalk-send-btn:disabled { cursor: not-allowed; }
     .dingtalk-chat-tools { margin-left: auto; display: flex; gap: 2px; }
     .dingtalk-chat-tools .dingtalk-icon-btn { width: 32px; height: 32px; position: relative; }
     .dingtalk-chat-tools .dot,
@@ -1262,7 +1275,7 @@
     }
     .dingtalk-composer-tools .dingtalk-icon-btn { position: relative; }
 
-    /* ---------- 输入区：点击打开原生编辑器 ---------- */
+    /* ---------- 输入区：IM 直接输入 ---------- */
     .dingtalk-chat-compose {
       position: relative;
       z-index: 430;
@@ -1273,21 +1286,35 @@
       border: 0;
       border-radius: 0;
       background: transparent;
-      color: var(--dd-text-4);
-      display: flex; align-items: flex-start; gap: 8px;
+      color: var(--dd-text);
+      display: block;
       padding: 10px 14px 4px;
-      cursor: pointer;
       font-size: 14px;
       font-family: var(--dd-font);
       transition: color 0.15s;
       pointer-events: auto !important;
       width: 100%;
       text-align: left;
+      resize: none;
+      outline: none;
+      overflow-y: auto;
+      max-height: 160px;
     }
-    .dingtalk-chat-compose:hover { color: var(--dd-accent); }
-    .dingtalk-chat-compose.busy { color: var(--dd-accent); }
-    .dingtalk-chat-compose.error { color: var(--dd-danger); }
-    .dingtalk-chat-compose svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .dingtalk-chat-compose::placeholder { color: var(--dd-text-4); }
+    .dingtalk-composer-target {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--dd-accent);
+      padding: 6px 14px 0;
+    }
+    .dingtalk-composer-target.active { display: flex; }
+    .dingtalk-composer-target button {
+      background: transparent; border: none; color: inherit; cursor: pointer;
+      padding: 0; font-size: 12px;
+    }
+    .dingtalk-composer-file { display: none; }
     .dingtalk-chat-panel[data-empty="1"] .dingtalk-composer { display: none; }
 
     /* 锁定态：原生主区不要抢走点击；关闭态 composer 直接隐藏 */
@@ -3022,7 +3049,7 @@
         panel.dataset.composeBound = "1";
         bindChatPanelEvents(panel);
       }
-      wireComposeButton(panel);
+      wireComposer(panel);
       return panel;
     }
     panel = document.createElement("div");
@@ -3062,30 +3089,76 @@
       <div class="dingtalk-chat-body"></div>
       <div class="dingtalk-composer">
         <div class="dingtalk-composer-card">
-          <button type="button" class="dingtalk-chat-compose" data-dingtalk-compose="1"><span>点击回复，打开原生编辑器…</span></button>
-          <div class="dingtalk-composer-tools">${toolsHtml}<div class="spacer"></div><button type="button" class="dingtalk-send-btn" tabindex="-1" aria-hidden="true">发送</button></div>
+          <div class="dingtalk-composer-target"><span></span><button type="button" title="取消回复">×</button></div>
+          <textarea class="dingtalk-chat-compose" data-dingtalk-compose="1" rows="2" placeholder="按 Enter 发送，Shift+Enter 换行"></textarea>
+          <div class="dingtalk-composer-tools">${toolsHtml}<div class="spacer"></div><span class="dingtalk-composer-status"></span><button type="button" class="dingtalk-send-btn" disabled>发送</button></div>
         </div>
+        <input type="file" class="dingtalk-composer-file" accept="image/*" multiple>
       </div>
     `;
     document.body.appendChild(panel);
     bindChatPanelEvents(panel);
-    wireComposeButton(panel);
+    wireComposer(panel);
     return panel;
   }
 
-  function wireComposeButton(panel) {
-    const btn = panel.querySelector(".dingtalk-chat-compose");
-    if (!btn || btn.dataset.wired === "1") return;
-    btn.dataset.wired = "1";
-    // 直接绑定 + 捕获阶段，避免被其它监听吞掉
-    const handler = (e) => {
+  function wireComposer(panel) {
+    const input = panel.querySelector(".dingtalk-chat-compose");
+    if (!input || input.dataset.wired === "1") return;
+    input.dataset.wired = "1";
+
+    const send = panel.querySelector(".dingtalk-send-btn");
+    const target = panel.querySelector(".dingtalk-composer-target");
+    const targetClose = target?.querySelector("button");
+    const fileInput = panel.querySelector(".dingtalk-composer-file");
+    const imageBtn = panel.querySelector('.dingtalk-composer-tools .dingtalk-icon-btn[data-tool="folder"]');
+
+    function updateSendState() {
+      const empty = !input.value.trim();
+      send.disabled = composerState.submitting || composerState.uploading || empty;
+    }
+    updateSendState();
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 160) + "px";
+      updateSendState();
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.shiftKey || e.isComposing || e.keyCode === 229) return;
       e.preventDefault();
       e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
-      openNativeComposer();
-    };
-    btn.addEventListener("click", handler, true);
-    btn.addEventListener("pointerup", handler, true);
+      submitComposer();
+    });
+
+    send.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      submitComposer();
+    });
+
+    if (imageBtn) {
+      imageBtn.title = "上传图片";
+      imageBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileInput.click();
+      });
+    }
+    fileInput.addEventListener("change", (e) => {
+      uploadComposerFiles(e.target.files);
+      e.target.value = "";
+    });
+
+    input.addEventListener("paste", (e) => handleComposerPaste(e));
+    panel.querySelector(".dingtalk-composer-card")?.addEventListener("drop", (e) => handleComposerDrop(e));
+    panel.querySelector(".dingtalk-composer-card")?.addEventListener("dragover", (e) => { e.preventDefault(); });
+
+    targetClose?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      hideTargetedReply();
+      input.focus();
+    });
   }
 
   function bindChatPanelEvents(panel) {
@@ -3102,10 +3175,7 @@
         location.reload();
         return;
       }
-      if (e.target.closest(".dingtalk-composer-card")) {
-        e.preventDefault();
-        e.stopPropagation();
-        openNativeComposer();
+      if (e.target.closest(".dingtalk-chat-compose, .dingtalk-composer-tools, .dingtalk-composer-target")) {
         return;
       }
       // 聊天头分类 chip：站内软跳转
@@ -3133,6 +3203,7 @@
       const body = panel.querySelector(".dingtalk-chat-body");
       if (body.scrollTop < 80) loadOlderPosts();
       if (body.scrollTop + body.clientHeight >= body.scrollHeight - 120) loadNewerPosts();
+      trackVisibleTopicPost();
     });
   }
 
@@ -3344,6 +3415,280 @@
       bar.textContent = btn.dataset.defaultLabel || "点击回复，打开原生编辑器…";
       btn.classList.remove("busy", "error");
     }, 3200);
+  }
+
+  const composerState = {
+    submitting: false,
+    uploading: false,
+    replyToPostNumber: null
+  };
+
+  function setComposeStatus(message, kind) {
+    const status = document.querySelector(".dingtalk-composer-status");
+    if (!status) return;
+    status.textContent = message || "";
+    status.classList.remove("busy", "error", "success");
+    if (kind) status.classList.add(kind);
+    if (message) {
+      clearTimeout(setComposeStatus._timer);
+      setComposeStatus._timer = setTimeout(() => {
+        status.textContent = "";
+        status.classList.remove("busy", "error", "success");
+      }, 3200);
+    }
+  }
+
+  function composeUi() {
+    const card = document.querySelector(".dingtalk-composer-card");
+    return {
+      card,
+      input: card?.querySelector(".dingtalk-chat-compose"),
+      target: card?.querySelector(".dingtalk-composer-target"),
+      send: card?.querySelector(".dingtalk-send-btn"),
+      status: card?.querySelector(".dingtalk-composer-status")
+    };
+  }
+
+  function updateComposeSendState() {
+    const { input, send } = composeUi();
+    if (!input || !send) return;
+    const empty = !input.value.trim();
+    send.disabled = composerState.submitting || composerState.uploading || empty;
+  }
+
+  async function submitReplyViaApi(raw, replyToPostNumber) {
+    const body = { raw, topic_id: Number(chatState.topicId) };
+    if (replyToPostNumber) body.reply_to_post_number = Number(replyToPostNumber);
+    const response = await fetch("/posts.json", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "X-CSRF-Token": csrfToken(),
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify(body)
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const err = payload.errors?.[0] || payload.error || `HTTP ${response.status}`;
+      throw new Error(err);
+    }
+    const post = payload.post || payload.created_post || payload;
+    if (!post || (!post.id && !post.post_id)) throw new Error("站点未确认回复");
+    return post;
+  }
+
+  function imageFile(file) {
+    if (!file) return false;
+    if (String(file.type || "").toLowerCase().startsWith("image/")) return true;
+    return /\.(?:avif|bmp|gif|jpe?g|png|svg|webp)$/i.test(String(file.name || ""));
+  }
+
+  async function uploadImageFile(file) {
+    const form = new FormData();
+    form.append("file", file, file.name || "image");
+    form.append("upload_type", "composer");
+    form.append("type", "composer");
+    form.append("synchronous", "true");
+    const response = await fetch("/uploads.json", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "X-CSRF-Token": csrfToken(),
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      body: form
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const err = payload.errors?.[0] || payload.error || `HTTP ${response.status}`;
+      throw new Error(err);
+    }
+    const upload = payload.upload || (Array.isArray(payload.uploads) ? payload.uploads[0] : null);
+    if (!upload) throw new Error("站点未返回图片地址");
+    return upload;
+  }
+
+  function uploadedImageMarkdown(upload, file) {
+    const url = upload.short_url || upload.url || upload.thumbnail_url;
+    if (!url) throw new Error("站点未返回图片地址");
+    const rawLabel = String(upload.original_filename || file?.name || "图片");
+    const label = rawLabel.replace(/\.[^.]+$/, "").replace(/[\[\]\\|]/g, "_");
+    const width = Number(upload.thumbnail_width || upload.width) || 0;
+    const height = Number(upload.thumbnail_height || upload.height) || 0;
+    const dimensions = width > 0 && height > 0 ? `|${width}x${height}` : "";
+    const safeUrl = String(url).replace(/[\\()]/g, (char) => `\\${char}`);
+    return `![${label}${dimensions}](${safeUrl})`;
+  }
+
+  function insertComposerText(text) {
+    const { input } = composeUi();
+    if (!input || !text) return;
+    const start = Number.isInteger(input.selectionStart) ? input.selectionStart : input.value.length;
+    const end = Number.isInteger(input.selectionEnd) ? input.selectionEnd : start;
+    const before = input.value.slice(0, start);
+    const after = input.value.slice(end);
+    const prefix = before && !/[\n ]$/.test(before) ? "\n" : "";
+    const suffix = after && !/^[\n ]/.test(after) ? "\n" : "";
+    input.value = `${before}${prefix}${text}${suffix}${after}`;
+    const caret = (before + prefix + text + suffix).length;
+    input.setSelectionRange(caret, caret);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.focus({ preventScroll: true });
+  }
+
+  async function uploadComposerFiles(files) {
+    const selected = [...(files || [])];
+    const images = selected.filter(imageFile);
+    if (!selected.length) return;
+    if (composerState.uploading) {
+      setComposeStatus("已有图片正在上传，请等待完成后重试", "error");
+      return;
+    }
+    if (!images.length) {
+      setComposeStatus("请选择图片文件", "error");
+      return;
+    }
+    composerState.uploading = true;
+    updateComposeSendState();
+    try {
+      const markdown = [];
+      for (const file of images) {
+        setComposeStatus(`正在上传 ${file.name || "图片"}…`, "busy");
+        const upload = await uploadImageFile(file);
+        markdown.push(uploadedImageMarkdown(upload, file));
+      }
+      insertComposerText(markdown.join("\n"));
+      setComposeStatus(`已添加 ${markdown.length} 张图片`, "success");
+    } catch (error) {
+      setComposeStatus(`上传失败：${error.message || "未知错误"}`, "error");
+    } finally {
+      composerState.uploading = false;
+      updateComposeSendState();
+    }
+  }
+
+  function transferImages(event) {
+    const transfer = event.clipboardData || event.dataTransfer;
+    const files = [...(transfer?.files || [])];
+    if (files.length) return files.filter(imageFile);
+    const itemFiles = [...(event.clipboardData?.items || [])]
+      .filter((item) => item.kind === "file")
+      .map((item) => item.getAsFile?.())
+      .filter(Boolean);
+    return itemFiles.filter(imageFile);
+  }
+
+  function handleComposerPaste(event) {
+    const files = transferImages(event);
+    if (!files.length) return;
+    event.preventDefault();
+    event.stopPropagation();
+    uploadComposerFiles(files);
+  }
+
+  function handleComposerDrop(event) {
+    const files = transferImages(event);
+    if (!files.length) return;
+    event.preventDefault();
+    event.stopPropagation();
+    uploadComposerFiles(files);
+  }
+
+  async function submitComposer() {
+    const { input } = composeUi();
+    if (!input || !input.value.trim() || composerState.submitting || composerState.uploading) return;
+    if (!chatState.topicId) {
+      setComposeStatus("请先打开一个话题", "error");
+      return;
+    }
+    composerState.submitting = true;
+    updateComposeSendState();
+    setComposeStatus("正在发送…", "busy");
+    const raw = input.value;
+    const replyTo = composerState.replyToPostNumber;
+    try {
+      try {
+        const post = await submitReplyViaApi(raw, replyTo);
+        completeComposerSubmission(input, post);
+      } catch (apiError) {
+        setComposeStatus(`接口发送失败，尝试原生编辑器：${apiError.message || ""}`, "error");
+        try {
+          await submitNativeReply(raw, replyTo);
+          completeComposerSubmission(input);
+        } catch (nativeError) {
+          setComposeStatus(`发送失败：${nativeError.message || apiError.message || "未知错误"}`, "error");
+        }
+      }
+    } finally {
+      composerState.submitting = false;
+      updateComposeSendState();
+    }
+  }
+
+  function completeComposerSubmission(input, post) {
+    input.value = "";
+    input.style.height = "auto";
+    composerState.replyToPostNumber = null;
+    hideTargetedReply();
+    setComposeStatus("发送成功", "success");
+    if (post && (post.post_number || post.postNumber)) {
+      chatState.renderedLastNumber = Math.max(
+        chatState.renderedLastNumber,
+        Number(post.post_number || post.postNumber)
+      );
+    }
+    setTimeout(() => syncNewPostsFromDom(), 400);
+    setTimeout(() => syncNewPostsFromDom(), 1200);
+  }
+
+  async function submitNativeReply(raw, replyToPostNumber) {
+    openNativeComposer(replyToPostNumber);
+    const ta = await waitForComposerTextarea();
+    if (!ta) throw new Error("无法打开原生编辑器");
+    ta.focus();
+    ta.value = raw;
+    ta.dispatchEvent(new Event("input", { bubbles: true }));
+    const submitBtn = document.querySelector(
+      "#reply-control .save-or-cancel button.create, #reply-control .save-or-cancel button.btn-primary, #reply-control button.create.btn-primary"
+    );
+    if (!submitBtn) throw new Error("找不到原生提交按钮");
+    submitBtn.click();
+  }
+
+  function waitForComposerTextarea(timeoutMs = 5000) {
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const check = () => {
+        const ta = document.querySelector("#reply-control textarea.d-editor-input, #reply-control textarea");
+        if (ta) return resolve(ta);
+        if (Date.now() - start > timeoutMs) return resolve(null);
+        setTimeout(check, 100);
+      };
+      check();
+    });
+  }
+
+  function showTargetedReply(postNumber) {
+    const { input, target } = composeUi();
+    composerState.replyToPostNumber = Number(postNumber) || null;
+    if (!target || !composerState.replyToPostNumber) return;
+    const message = document.querySelector(`.dingtalk-msg[data-post-number="${postNumber}"]`);
+    const name = message?.querySelector(".dingtalk-msg-name")?.textContent?.trim();
+    target.querySelector("span").textContent = name ? `回复 ${name} · #${postNumber}` : `回复消息 #${postNumber}`;
+    target.classList.add("active");
+    input?.focus();
+  }
+
+  function hideTargetedReply() {
+    const { target } = composeUi();
+    composerState.replyToPostNumber = null;
+    if (target) target.classList.remove("active");
+  }
+
+  function replyToPost(postNumber) {
+    showTargetedReply(postNumber);
   }
 
   /** 临时让原生回复按钮可被程序点击（它们在 height:0 的 outlet 里） */
@@ -3567,11 +3912,65 @@
     }
   }
 
-  function replyToPost(postNumber) {
-    openNativeComposer(postNumber);
+  const TIME_SEP_GAP = 10 * 60 * 1000;
+
+  function readLastReadMap() {
+    try {
+      return JSON.parse(localStorage.getItem(LAST_READ_KEY) || "{}");
+    } catch {
+      return {};
+    }
   }
 
-  const TIME_SEP_GAP = 10 * 60 * 1000;
+  function rememberTopicPost(topicId, postNumber) {
+    const id = Number(topicId);
+    const n = Number(postNumber) || 0;
+    if (!id || n < 1) return;
+    const map = readLastReadMap();
+    map[id] = n;
+    const keys = Object.keys(map);
+    if (keys.length > LAST_READ_MAX_TOPICS) {
+      for (const key of keys.slice(0, keys.length - LAST_READ_MAX_TOPICS)) delete map[key];
+    }
+    try {
+      localStorage.setItem(LAST_READ_KEY, JSON.stringify(map));
+    } catch { /* ignore quota */ }
+  }
+
+  function getRememberedPost(topicId) {
+    return Number(readLastReadMap()[topicId]) || 0;
+  }
+
+  function scrollChatToPost(body, postNumber) {
+    if (!body || !postNumber) return false;
+    const el = body.querySelector(`.dingtalk-msg[data-post-number="${postNumber}"]`);
+    if (!el) return false;
+    const delta = el.getBoundingClientRect().top - body.getBoundingClientRect().top;
+    body.scrollTop = Math.max(0, body.scrollTop + delta);
+    return true;
+  }
+
+  function visibleTopicPosts(body) {
+    if (!body) return [];
+    const rect = body.getBoundingClientRect();
+    const posts = [];
+    for (const msg of body.querySelectorAll(".dingtalk-msg[data-post-number]")) {
+      const box = msg.getBoundingClientRect();
+      if (box.bottom <= rect.top + 8 || box.top >= rect.bottom - 8) continue;
+      const number = Number(msg.dataset.postNumber) || 0;
+      if (number) posts.push(number);
+    }
+    return posts;
+  }
+
+  const trackVisibleTopicPost = debounce(() => {
+    if (!chatState.topicId) return;
+    const body = document.querySelector(".dingtalk-chat-body");
+    const visible = visibleTopicPosts(body);
+    const postNumber = visible[0];
+    if (!postNumber) return;
+    rememberTopicPost(chatState.topicId, postNumber);
+  }, 220);
 
   function renderBubbles(posts, myName) {
     const frag = [];
@@ -3605,11 +4004,24 @@
       body.innerHTML = `<div class="dingtalk-chat-loading">加载中…</div>`;
     }
     try {
-      const data = await api(`/t/${topicId}.json`);
+      const rememberedPost = getRememberedPost(topicId);
+      let data;
+      let scrollToPost = 0;
+      if (rememberedPost > 1) {
+        try {
+          data = await api(`/t/${topicId}/${rememberedPost}.json`);
+          scrollToPost = rememberedPost;
+        } catch {
+          data = await api(`/t/${topicId}.json`);
+        }
+      } else {
+        data = await api(`/t/${topicId}.json`);
+      }
       if (chatState.topicId !== topicId) return; // 路由已切走
       let posts = (data.post_stream && data.post_stream.posts) || [];
       // 登录态下 Discourse 的窗口可能锚定在「上次阅读处」；按 IM 观感固定从第 1 楼开始展示
       if (
+        !scrollToPost &&
         posts.length &&
         Number(posts[0].post_number) !== 1 &&
         Array.isArray(data.post_stream?.stream)
@@ -3698,7 +4110,11 @@
       if (body) {
         body.innerHTML = renderBubbles(posts, getCurrentUsername()) ||
           `<div class="dingtalk-chat-empty">${ICONS.msg}<div>暂无消息</div></div>`;
-        body.scrollTop = 0; // 从第一条消息看起
+        if (scrollToPost) {
+          requestAnimationFrame(() => scrollChatToPost(body, scrollToPost));
+        } else {
+          body.scrollTop = 0; // 从第一条消息看起
+        }
       }
       syncListActive();
     } catch (err) {

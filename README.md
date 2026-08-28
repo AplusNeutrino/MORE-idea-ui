@@ -1,8 +1,8 @@
-# Linux DO · JetBrains / 飞书 / 钉钉 风格外观
+# Linux DO · JetBrains / 飞书 / 钉钉 / 终端 TUI 风格外观
 
-把 [linux.do](https://linux.do/) 换成 **JetBrains IDE**、**飞书 IM** 或**钉钉 PC IM** 风格。只换皮，不碰数据——内容、链接、按钮与交互全部保留。
+把 [linux.do](https://linux.do/) 换成 **JetBrains IDE**、**飞书 IM**、**钉钉 PC IM** 或**终端 TUI（Claude Code / Codex CLI）**风格。只换皮，不碰数据——内容、链接、按钮与交互全部保留。
 
-> ⚠️ 三个脚本**互斥**，同一时刻只启用一个。同时启用时后装脚本会自动避让（控制台有提示）。
+> ⚠️ 四个脚本**互斥**，同一时刻只启用一个。同时启用时后装脚本会自动避让（控制台有提示）。
 
 ## 脚本一：JetBrains / Darcula 外观（`linuxdo-idea.user.js`）
 
@@ -113,6 +113,49 @@ https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-dingtalk.user.js
 | 点击下拉筛选 | ![点击下拉筛选](./snapshot/点击下拉筛选-ding.png) |
 | hover 头像通知 | ![hover 头像通知](./snapshot/hover%20头像通知-ding.png) |
 | 一键切换隐私头像 | ![一键切换隐私头像](./snapshot/一键切换隐私头像-ding.png) |
+
+## 脚本四：终端 TUI 外观 — Claude Code / Codex CLI（`linuxdo-terminal.user.js`）
+
+把 LinuxDo 伪装成 **Claude Code** 或 **OpenAI Codex CLI** 的终端会话界面，黑底等宽字体、命令行式交互。
+
+### 安装
+
+同上，安装 [`linuxdo-terminal.user.js`](./linuxdo-terminal.user.js) 即可。
+
+Raw 直链（仓库公开后可用）：
+
+```text
+https://github.com/czm15053/linuxdo-idea-ui/raw/main/linuxdo-terminal.user.js
+```
+
+### 功能
+
+- **双配色一键切换**：标题栏 `Claude` / `Codex` 两个 tab 切换；Claude Code 采用紫/薰衣草高亮，Codex CLI 采用蓝/琥珀高亮，偏好写入 `localStorage`
+- **终端窗口外壳**：mac 显示红绿灯，Windows 显示最小化/最大化/关闭按钮；标签页标题固定为 `linux.do — zsh/pwsh`，不暴露真实帖子标题
+- **启动画面**：列表页顶部仿真实 CLI 启动信息
+  - Claude：版本盒、Tips、What's new、awaiting/working/completed 计数
+  - Codex：directory / permissions / model 信息行 + 每日轮换 Tip
+- **话题列表**：渲染为终端会话列表，显示已读/未读圆点、置顶标、回复数；底部提示真实快捷键
+- **话题详情**：帖子渲染为 assistant turn，含折叠式 thinking 块、假工具调用、真实帖子内容；支持上下滚动加载更多楼层
+- **底部 composer**：`Enter` 发送、`Shift+Enter` 换行、`Esc` 清除；API 发送失败后自动 fallback 到原生编辑器；可回复指定楼层
+- **分类浮层**：点击面包屑分类或按 `/` 唤出 Select 浮层，左列选分类、右列选视图（最新 / 新帖 / 未读 / 热门 / 排行榜），支持键盘导航与 filter 输入
+- **键盘快捷键**：按 `?` 查看完整快捷键；主要包含
+  - 全局：`⌘/Ctrl+K` 搜索，`/` 分类，`Esc` 返回/关闭
+  - 列表页：`↑/k ↓/j` 移动，`←/h →/l` 切换视图，`↵` 打开
+  - 详情页：`j/k` 滚动，`r` 回复，`l` 点赞，`c` 复制链接
+- **原生视图切换**：状态栏 `native` 可切回原版 Discourse 界面，选择会记住
+- **未读通知**：状态栏每分钟刷新未读通知数
+- **互斥**：检测到 IDEA、飞书、钉钉或其他 codex 主题时自动避让
+
+### 截图
+
+| | |
+| --- | --- |
+| Claude Code 列表页 | ![Claude Code 列表页](./snapshot/cc列表页-TUI.png) |
+| Claude Code 详情页 | ![Claude Code 详情页](./snapshot/cc详情页-TUI.png) |
+| Codex 列表页 | ![Codex 列表页](./snapshot/codex列表页-TUI.png) |
+| Codex 详情页 | ![Codex 详情页](./snapshot/Codex详情页-TUI.png) |
+| 分类选择浮层 | ![分类选择浮层](./snapshot/点击切换分类-TUI.png) |
 
 ## License
 
